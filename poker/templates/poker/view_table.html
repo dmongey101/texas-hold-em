@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+    
+    <h2>{{ table.name }}</h2>
+    {% for player in players %}
+    {{ player.user }}
+    {% endfor %}
+    
+    <a href="{% url 'pre_flop' %}" class="white_text">Show pre-flop</a>
+   
+{% endblock %}
