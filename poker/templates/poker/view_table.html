@@ -3,9 +3,9 @@
     
     <h2>{{ table.name }}</h2>
     {% for player in players %}
-    {{ player.user }}
+    {{ player.name }}
     {% endfor %}
     
-    <a href="{% url 'pre_flop' %}" class="white_text">Show pre-flop</a>
+    <a href="#" class="white_text">Show pre-flop</a>
    
 {% endblock %}
