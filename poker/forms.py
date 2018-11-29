@@ -4,7 +4,7 @@ from .models import Table, Player, Hand
 class CreateTableForm(forms.ModelForm):
     class Meta:
         model = Table
-        fields = "__all__"
+        exclude = ('current_player', )
         
         
 class CreatePlayerForm(forms.ModelForm):

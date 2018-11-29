@@ -7,29 +7,33 @@ class Table(models.Model):
     
     name = models.CharField(max_length=50)
     blinds = models.IntegerField(default=10)
+    current_player = models.OneToOneField(User, on_delete=models.CASCADE, related_name='current_player', default=1, null=False)
+    
     
     def __str__(self):
         return self.name
-    
+        
 class Player(models.Model):
     
     user = models.OneToOneField(User, related_name='player', on_delete=models.CASCADE, null=False, default=1)
     table = models.ForeignKey(Table, default=1, on_delete=models.CASCADE)
     chips = models.IntegerField(default=1000)
-    card_1 = models.CharField(max_length=500, default="")
-    card_2 = models.CharField(max_length=500, default="")
+    card_1 = models.CharField(max_length=3, default="")
+    card_2 = models.CharField(max_length=3, default="")
     
     def __str__(self):
         return self.user.username 
     
+    
+
 class Hand(models.Model):
     
     table = models.ForeignKey(Table, related_name="table_hand", on_delete=models.CASCADE)
-    card_1 = models.CharField(max_length=500)
-    card_2 = models.CharField(max_length=500)
-    card_3 = models.CharField(max_length=500)
-    card_4 = models.CharField(max_length=500)
-    card_5 = models.CharField(max_length=500)
+    card_1 = models.CharField(max_length=3)
+    card_2 = models.CharField(max_length=3)
+    card_3 = models.CharField(max_length=3)
+    card_4 = models.CharField(max_length=3)
+    card_5 = models.CharField(max_length=3)
     players = models.ManyToManyField(Player)
     pot = models.IntegerField(default=0)
     preflop_betting = models.IntegerField(default=0)

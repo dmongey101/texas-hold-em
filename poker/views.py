@@ -92,6 +92,8 @@ def deal_cards(request, id):
     hand.save()
     for player in players:
         hand.players.add(player)
+    table.current_player = request.user
+    table.save()
     return redirect('current_hand', id)
         
 
@@ -109,8 +111,6 @@ def fold_hand(request, hand_id, player_id):
 def raise_bet(request, table_id, hand_id, player_id):
     hand = get_object_or_404(Hand, id=hand_id)
     player = get_object_or_404(Player, id=player_id)
-    pot = hand.pot
-    player_chips = player.chips
     amount = request.POST['raise']
     hand.pot += int(amount)
     hand.save()
