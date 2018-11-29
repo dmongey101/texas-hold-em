@@ -23,31 +23,43 @@
 {{ player.card_2 }}</p>
 {% endif %}
 
-{% if hand != None and player.user == request.user %}
+{% if hand != None and player.user == request.user and player.is_active %}
+
 <form method="POST" action="{% url 'fold' hand.id player.id %}">
     {% csrf_token %}
     <input type="submit" value="Fold"/>
 </form>
 <br>
-<form method="POST" action="#">
+{% if hand.sub_pot == 0 %}
+<form method="POST" action="{% url 'bet' table.id hand.id player.id %}">
     {% csrf_token %}
-    <input type="submit" value="Check"/>
+    <input type="number" step="10" name="bet"/>
+    <input type="submit" value="Bet"/>
 </form>
 <br>
-<form method="POST" action="#">
-    {% csrf_token %}
-    <input type="submit" value="Call"/>
-</form>
-<br>
+{% else %}
 <form method="POST" action="{% url 'raise' table.id hand.id player.id %}">
     {% csrf_token %}
     <input type="number" step="10" name="raise"/>
     <input type="submit" value="Raise"/>
 </form>
+<br>
+{% endif %}
+<form method="POST" action="#">
+    {% csrf_token %}
+    <input type="submit" value="Check"/>
+</form>
+<br>
+<form method="POST" action="{% url 'call' table.id hand.id player.id %}">
+    {% csrf_token %}
+    <input type="submit" value="Call"/>
+</form>
+
 {% endif %}
 <br>
 {% endfor %}
 
+<h3>Sub Pot: <i>{{ hand.sub_pot }}</i></h3>
 
 <h3>Pot: <i>{{ hand.pot }}</i></h3>
 <hr>

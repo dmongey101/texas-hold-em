@@ -47,7 +47,7 @@ def join_table(request, id):
     player.table_id = id
     player.user = request.user
     player.save()
-    return redirect('view_table', id)
+    return redirect('current_hand', id)
     
 def leave_table(request, table_id, player_id):
     table = Table.objects.get(id=table_id)
@@ -75,6 +75,7 @@ def deal_cards(request, id):
             p+=1
         
         for player in players:
+            player.is_active = True
             player.save()
     poker.burnOne()
     card1 = poker.getOne()
@@ -92,8 +93,6 @@ def deal_cards(request, id):
     hand.save()
     for player in players:
         hand.players.add(player)
-    table.current_player = request.user
-    table.save()
     return redirect('current_hand', id)
         
 
@@ -103,24 +102,38 @@ def fold_hand(request, hand_id, player_id):
     hand = Hand.objects.get(id=hand_id)
     hand.players.remove(p)
     hand.save()
+    p.is_active = False
+    p.save()
     table_id = hand.table_id
     return redirect('current_hand', table_id)
-    
 
-    
-def raise_bet(request, table_id, hand_id, player_id):
+def bet(request, table_id, hand_id, player_id):
     hand = get_object_or_404(Hand, id=hand_id)
     player = get_object_or_404(Player, id=player_id)
-    amount = request.POST['raise']
-    hand.pot += int(amount)
+    amount = request.POST['bet']
+    hand.sub_pot += int(amount)
     hand.save()
     player.chips -= int(amount)
     player.save()
     return redirect('current_hand', table_id)
     
-
+def raise_bet(request, table_id, hand_id, player_id):
+    hand = get_object_or_404(Hand, id=hand_id)
+    player = get_object_or_404(Player, id=player_id)
+    amount = request.POST['raise']
+    player.chips -= (int(amount) +  hand.sub_pot)
+    player.save()
+    hand.sub_pot += int(amount)
+    hand.save()
+    return redirect('current_hand', table_id)
     
-    
+def call_bet(request, table_id, hand_id, player_id):
+    hand = get_object_or_404(Hand, id=hand_id)
+    player = get_object_or_404(Player, id=player_id)
+    call = hand.sub_pot
+    player.chips -= call
+    player.save()
+    return redirect('current_hand', table_id)
     
     
     

@@ -7,7 +7,6 @@ class Table(models.Model):
     
     name = models.CharField(max_length=50)
     blinds = models.IntegerField(default=10)
-    current_player = models.OneToOneField(User, on_delete=models.CASCADE, related_name='current_player', default=1, null=False)
     
     
     def __str__(self):
@@ -18,6 +17,7 @@ class Player(models.Model):
     user = models.OneToOneField(User, related_name='player', on_delete=models.CASCADE, null=False, default=1)
     table = models.ForeignKey(Table, default=1, on_delete=models.CASCADE)
     chips = models.IntegerField(default=1000)
+    is_active = models.BooleanField(default=True)
     card_1 = models.CharField(max_length=3, default="")
     card_2 = models.CharField(max_length=3, default="")
     
@@ -35,11 +35,8 @@ class Hand(models.Model):
     card_4 = models.CharField(max_length=3)
     card_5 = models.CharField(max_length=3)
     players = models.ManyToManyField(Player)
+    sub_pot = models.IntegerField(default=0)
     pot = models.IntegerField(default=0)
-    preflop_betting = models.IntegerField(default=0)
-    flop_betting = models.IntegerField(default=0)
-    turn_betting = models.IntegerField(default=0)
-    river_betting = models.IntegerField(default=0)
     winner = models.ManyToManyField(Player, related_name="winning_hands")
     
     
