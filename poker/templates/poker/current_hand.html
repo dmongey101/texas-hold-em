@@ -5,23 +5,51 @@
 <h3>{{ table.name }}</h3>
 <p><b>Starting Blinds: {{ table.blinds }}</b></p>
 
-
-{% if user.is_authenticated %}
-<form method="POST" action="{% url 'join_table' table.id %}">
-    {% csrf_token %}
-    <input type="submit" value="Join Table"/>
-</form>
-{% endif %}
-
 <hr>
 
 {% for player in players %}
+{% if player.user == request.user %}
+<form method="POST" action="{% url 'leave_table' table.id player.id %}">
+    {% csrf_token %}
+    <input type="submit" value="Leave Table"/>
+</form>
+<br>
+{% endif %}
 
 <p>{{ player.user }} - <i>${{ player.chips }}</i></p>
 
+{% if player.user == request.user %}
+<p>{{ player.card_1 }}
+{{ player.card_2 }}</p>
+{% endif %}
+
+{% if hand != None and player.user == request.user %}
+<form method="POST" action="{% url 'fold' hand.id player.id %}">
+    {% csrf_token %}
+    <input type="submit" value="Fold"/>
+</form>
+<br>
+<form method="POST" action="#">
+    {% csrf_token %}
+    <input type="submit" value="Check"/>
+</form>
+<br>
+<form method="POST" action="#">
+    {% csrf_token %}
+    <input type="submit" value="Call"/>
+</form>
+<br>
+<form method="POST" action="{% url 'raise' table.id hand.id player.id %}">
+    {% csrf_token %}
+    <input type="number" step="10" name="raise"/>
+    <input type="submit" value="Raise"/>
+</form>
+{% endif %}
 <br>
 {% endfor %}
 
+
+<h3>Pot: <i>{{ hand.pot }}</i></h3>
 <hr>
 
 <button class="btn btn-primary" onclick="show_cards('flop')">Show Flop</button>

@@ -2,7 +2,7 @@
 {% load bootstrap_tags %}
 
 {% block content %}
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST">
         {% csrf_token %}
         {{ form | as_bootstrap }}
         <input type="submit"/>

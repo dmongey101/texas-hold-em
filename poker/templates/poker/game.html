@@ -1,24 +1,24 @@
 {% extends "base.html" %}
 {% load static from staticfiles %}
 {% block content %}
-
 <h3>{{ table.name }}</h3>
-<p><b>Starting Blinds: {{ table.blinds }}</b></p>
-
-
-{% if user.is_authenticated %}
-<form method="POST" action="{% url 'join_table' table.id %}">
-    {% csrf_token %}
-    <input type="submit" value="Join Table"/>
-</form>
-{% endif %}
-
-<hr>
 
 {% for player in players %}
+<p>{{ player.user }}</p>
+{% if player.user == request.user %}
+<p>{{ player.card_1 }}
+{{ player.card_2 }}</p>
+{% else %}
+<p>Card Card</p>
+{% endif %}
 
-<p>{{ player.user }} - <i>${{ player.chips }}</i></p>
-
+{% if hand != None and player.user == request.user %}
+<form method="POST" action="{% url 'fold' hand.id player.id %}">
+    {% csrf_token %}
+    <input type="submit" value="Fold"/>
+</form>
+{% endif %}
+<br>
 <br>
 {% endfor %}
 
@@ -47,9 +47,9 @@
     <h3>Winner: {{ winner }}</h3>
 </div>
 
-<form method="POST" action="{% url 'deal' table.id %}">
+<form method="POST" action="{% url 'start_game' table.id %}">
     {% csrf_token %}
-    <input type="submit" value="Deal"/>
+    <input type="submit" value="Shuffle"/>
 </form>
    
 {% endblock %}
@@ -57,4 +57,3 @@
 {% block bottom_scripts %}
     <script type="text/javascript" src="{% static 'js/show_cards.js' %}"></script>
 {% endblock %}
-

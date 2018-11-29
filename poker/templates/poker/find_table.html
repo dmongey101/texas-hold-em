@@ -2,7 +2,14 @@
 {% block content %}
 
 {% for table in tables %}
-<p><a href="{% url 'get_table' table.name %}" class="white_text">{{ table.name }}</a></p>
+<p>{{ table.name }}
+<form method="POST" action="{% url 'view_table' table.id %}">
+    {% csrf_token %}
+    <input type="submit" value="View Table"/>
+</form></p>
+
+
 {% endfor %}
+
 
 {% endblock %}

@@ -6,6 +6,113 @@ class Card:
         self.symbol = symbol
         self.value = value
     
+    @staticmethod
+    def from_str(str):
+        if str == "AD":
+            return Card(0, 14)
+        elif str == "AH":
+            return Card(1, 14)
+        elif str == "AS":
+            return Card(2, 14)
+        elif str == "AC":
+            return Card(3, 14)
+        elif str == "KD":
+            return Card(0, 13)
+        elif str == "KH":
+            return Card(1, 13)
+        elif str == "KS":
+            return Card(2, 13)
+        elif str == "KC":
+            return Card(3, 13)
+        elif str == "QD":
+            return Card(0, 12)
+        elif str == "QH":
+            return Card(1, 12)
+        elif str == "QS":
+            return Card(2, 12)
+        elif str == "QC":
+            return Card(3, 12)
+        elif str == "JD":
+            return Card(0, 11)
+        elif str == "JH":
+            return Card(1, 11)
+        elif str == "JS":
+            return Card(2, 11)
+        elif str == "JC":
+            return Card(3, 11)
+        elif str == "10D":
+            return Card(0, 10)
+        elif str == "10H":
+            return Card(1, 10)
+        elif str == "10S":
+            return Card(2, 10)
+        elif str == "10C":
+            return Card(3, 10)
+        elif str == "9D":
+            return Card(0, 9)
+        elif str == "9H":
+            return Card(1, 9)
+        elif str == "9S":
+            return Card(2, 9)
+        elif str == "9C":
+            return Card(3, 9)
+        elif str == "8D":
+            return Card(0, 8)
+        elif str == "8H":
+            return Card(1, 8)
+        elif str == "8S":
+            return Card(2, 8)
+        elif str == "8C":
+            return Card(3, 8)
+        elif str == "7D":
+            return Card(0, 7)
+        elif str == "7H":
+            return Card(1, 7)
+        elif str == "7S":
+            return Card(2, 7)
+        elif str == "7C":
+            return Card(3, 7)
+        elif str == "6D":
+            return Card(0, 6)
+        elif str == "6H":
+            return Card(1, 6)
+        elif str == "6S":
+            return Card(2, 6)
+        elif str == "6C":
+            return Card(3, 6)
+        elif str == "5D":
+            return Card(0, 5)
+        elif str == "5H":
+            return Card(1, 5)
+        elif str == "5S":
+            return Card(2, 5)
+        elif str == "5C":
+            return Card(3, 5)
+        elif str == "4D":
+            return Card(0, 4)
+        elif str == "4H":
+            return Card(1, 4)
+        elif str == "4S":
+            return Card(2, 4)
+        elif str == "4C":
+            return Card(3, 4)
+        elif str == "3D":
+            return Card(0, 3)
+        elif str == "3H":
+            return Card(1, 3)
+        elif str == "3S":
+            return Card(2, 3)
+        elif str == "3C":
+            return Card(3, 3)
+        elif str == "2D":
+            return Card(0, 2)
+        elif str == "2H":
+            return Card(1, 2)
+        elif str == "2S":
+            return Card(2, 2)
+        else:
+            return Card(3, 2)
+    
     def __lt__(self, other):
         return self.value < other.value
 
@@ -24,10 +131,7 @@ class Card:
         else:
             text = str(self.value)
         
-        
-        
-        
-        
+
         if self.symbol == 0:    #D-Diamonds
             text += "D" 
         elif self.symbol == 1:  #H-Hearts
@@ -38,6 +142,10 @@ class Card:
             text += "C" 
             
         return text    
+        
+        
+    
+        
     
 class deck:
     

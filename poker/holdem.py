@@ -27,28 +27,27 @@ class Poker:
         return self.deck.cut(amount)
     
     #===============================================
-    #------------------Get Flop---------------------
+    #------------------Burns One---------------------
     #===============================================    
-    def getFlop(self):  
-        #Burns 3 cards, then returns the flop
+    def burnOne(self):  
+        #Burns 1 card
         if not self.deck.deal(1):
             return False
-        return self.deck.deal(3)
+        return self.deck.deal(0)
     
     #===============================================
     #------------------Get One----------------------
     #===============================================
     def getOne(self):
-        #Burns 1 card, then returns the flop
-        if not self.deck.deal(1):
-            return False    
+        #Turns One
+           
         return self.deck.deal(1)
     
     #===============================================
     #------------------Distribute-------------------
     #===============================================
     def distribute(self):
-        number_of_cards = 2 #Each player gets 2 cards when playing by Texas Hold Em rules
+        number_of_cards = 1 #Each player gets 2 cards when playing by Texas Hold Em rules
         if(number_of_cards*self.number_of_players > self.deck.cards_left() ):
             return False
         
@@ -361,16 +360,15 @@ class Poker:
     #---------------Determine Score-----------------
     #===============================================
     def determine_score(self, community_cards, players_hands):
-        
         for hand in players_hands:
+            
             hand.extend(community_cards)
             hand.sort()
-    
         results = []
         if self.debug:      #Outputs the debug statements
             print("---- Determining Scores----")
+        
         for hand in players_hands:
-                     
             overall = self.score(hand)
             results.append([overall[0], overall[1]])    # Stores the results
             

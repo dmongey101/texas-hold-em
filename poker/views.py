@@ -1,13 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from .holdem import Poker
-from .forms import CreateTableForm
-from .models import Table, Player
+from .deck import Card
+from .forms import CreateTableForm, CreatePlayerForm, CreateHandForm
+from .models import Table, Player, Hand
 import sys, random
-
-
-
-# Create your views here.
 
 def show_index(request):
     return render(request, "poker/index.html")
@@ -19,7 +17,11 @@ def create_table(request):
         table = form.save(commit=False)
         table.owner = request.user
         table.save()
-        return redirect(view_table, request.POST['name'])
+        player = Player()
+        player.table_id = table.id
+        player.user = request.user
+        player.save()
+        return redirect('view_table', table.id)
     else:
         form = CreateTableForm()
         return render(request, "poker/create_table_form.html", {'form': form})
@@ -27,26 +29,99 @@ def create_table(request):
 def find_table(request):
     tables = Table.objects.all()
     return render(request, "poker/find_table.html", {"tables" : tables})
+        
+def view_table(request, id):
+    table = get_object_or_404(Table, pk=id)
+    players = Player.objects.filter(table=table)
+    hand = Hand.objects.last()
+    return render(request, "poker/view_table.html", {"table" : table, "players" : players, "hand" : hand})
 
-def view_table(request, name):
-    table = Table.objects.get(name=name)
-    players = Player.objects.all()
-    number_of_players = 4
-    # print(table.hands.count())
-    # if table.hands.count() > 0:
-    #     hand = table.hands[0]
-    #     number_of_players = hand.players.count()
-    # else:
-    #     number_of_players = 0
+def get_current_hand(request, id):
+    table = get_object_or_404(Table, pk=id)
+    players = Player.objects.filter(table=table)
+    hand = Hand.objects.last()
+    return render(request, "poker/current_hand.html", {"table" : table, "players" : players, "hand" : hand})
+
+def join_table(request, id):
+    player = Player()
+    player.table_id = id
+    player.user = request.user
+    player.save()
+    return redirect('view_table', id)
     
+def leave_table(request, table_id, player_id):
+    table = Table.objects.get(id=table_id)
+    player = Player.objects.get(id=player_id).delete()
+    return redirect('view_table', table_id)
+    
+def deal_cards(request, id):
+    table = get_object_or_404(Table, pk=id)
+    players = Player.objects.filter(table=table)
     debug = False
+    number_of_players = len(players)
     poker = Poker(number_of_players, debug)
     poker.shuffle()
     poker.cut(random.randint(1,51))
-    players_hand = poker.distribute()
-    community_cards = []
-    return render(request, "poker/view_table.html", {"table" : table, "players" : players})
+    hand = Hand()
+    hand.table_id = table.id
+    for i in range(2):
+        cards = poker.distribute()
+        p = 0
+        for player in players:
+            if i == 0:
+                player.card_1 = cards[p][0]
+            elif i == 1:
+                player.card_2 = cards[p][0]
+            p+=1
+        
+        for player in players:
+            player.save()
+    poker.burnOne()
+    card1 = poker.getOne()
+    hand.card_1 = card1[0]
+    card2 = poker.getOne()
+    hand.card_2 = card2[0]
+    card3 = poker.getOne()
+    hand.card_3 = card3[0]
+    poker.burnOne()
+    card4 = poker.getOne()
+    hand.card_4 = card4[0]
+    poker.burnOne()
+    card5 = poker.getOne()
+    hand.card_5 = card5[0]
+    hand.save()
+    for player in players:
+        hand.players.add(player)
+    return redirect('current_hand', id)
+        
+
+
+def fold_hand(request, hand_id, player_id):
+    p = Player.objects.get(id=player_id)
+    hand = Hand.objects.get(id=hand_id)
+    hand.players.remove(p)
+    hand.save()
+    table_id = hand.table_id
+    return redirect('current_hand', table_id)
     
 
+    
+def raise_bet(request, table_id, hand_id, player_id):
+    hand = get_object_or_404(Hand, id=hand_id)
+    player = get_object_or_404(Player, id=player_id)
+    pot = hand.pot
+    player_chips = player.chips
+    amount = request.POST['raise']
+    hand.pot += int(amount)
+    hand.save()
+    player.chips -= int(amount)
+    player.save()
+    return redirect('current_hand', table_id)
+    
 
+    
+    
+    
+    
+    
     

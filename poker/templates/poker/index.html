@@ -3,4 +3,8 @@
 
 <h1>Texas Hold'em</h1>
 
+{% for user in users %}
+    <p>{{ user.username }}</p>
+    {% endfor %}
+
 {% endblock %}
