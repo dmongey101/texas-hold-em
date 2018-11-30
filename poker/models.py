@@ -15,9 +15,10 @@ class Table(models.Model):
 class Player(models.Model):
     
     user = models.OneToOneField(User, related_name='player', on_delete=models.CASCADE, null=False, default=1)
-    table = models.ForeignKey(Table, default=1, on_delete=models.CASCADE)
+    table = models.ForeignKey(Table, default=1, related_name='players', on_delete=models.CASCADE)
     chips = models.IntegerField(default=1000)
     is_active = models.BooleanField(default=True)
+    seat_num = models.IntegerField(default=0)
     card_1 = models.CharField(max_length=3, default="")
     card_2 = models.CharField(max_length=3, default="")
     
@@ -35,6 +36,7 @@ class Hand(models.Model):
     card_4 = models.CharField(max_length=3)
     card_5 = models.CharField(max_length=3)
     players = models.ManyToManyField(Player)
+    current_player = models.IntegerField(default=0)
     sub_pot = models.IntegerField(default=0)
     pot = models.IntegerField(default=0)
     winner = models.ManyToManyField(Player, related_name="winning_hands")

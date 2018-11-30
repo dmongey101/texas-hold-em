@@ -77,6 +77,7 @@ def deal_cards(request, id):
         for player in players:
             player.is_active = True
             player.save()
+            
     poker.burnOne()
     card1 = poker.getOne()
     hand.card_1 = card1[0]
@@ -91,16 +92,22 @@ def deal_cards(request, id):
     card5 = poker.getOne()
     hand.card_5 = card5[0]
     hand.save()
+    player = Player()
     for player in players:
         hand.players.add(player)
+            
+    # for index, item in enumerate(players):
+    #     print(players[1])
     return redirect('current_hand', id)
         
-
-
 def fold_hand(request, hand_id, player_id):
     p = Player.objects.get(id=player_id)
     hand = Hand.objects.get(id=hand_id)
     hand.players.remove(p)
+    if hand.current_player >= len(players) - 1:
+        hand.current_player = 0
+    else: 
+        hand.current_player += 1
     hand.save()
     p.is_active = False
     p.save()
@@ -108,33 +115,58 @@ def fold_hand(request, hand_id, player_id):
     return redirect('current_hand', table_id)
 
 def bet(request, table_id, hand_id, player_id):
+    players = Player.objects.filter(table_id=table_id)
     hand = get_object_or_404(Hand, id=hand_id)
     player = get_object_or_404(Player, id=player_id)
     amount = request.POST['bet']
+    hand.pot += int(amount)
     hand.sub_pot += int(amount)
+    if hand.current_player >= len(players) - 1:
+        hand.current_player = 0
+    else: 
+        hand.current_player += 1
     hand.save()
     player.chips -= int(amount)
     player.save()
     return redirect('current_hand', table_id)
     
 def raise_bet(request, table_id, hand_id, player_id):
+    players = Player.objects.filter(table_id=table_id)
     hand = get_object_or_404(Hand, id=hand_id)
     player = get_object_or_404(Player, id=player_id)
     amount = request.POST['raise']
     player.chips -= (int(amount) +  hand.sub_pot)
     player.save()
+    hand.pot += (int(amount) +  hand.sub_pot)
     hand.sub_pot += int(amount)
+    if hand.current_player >= len(players) - 1:
+        hand.current_player = 0
+    else: 
+        hand.current_player += 1
     hand.save()
     return redirect('current_hand', table_id)
     
 def call_bet(request, table_id, hand_id, player_id):
+    players = Player.objects.filter(table_id=table_id)
     hand = get_object_or_404(Hand, id=hand_id)
     player = get_object_or_404(Player, id=player_id)
     call = hand.sub_pot
+    hand.pot += hand.sub_pot
     player.chips -= call
     player.save()
+    if hand.current_player >= len(players) - 1:
+        hand.current_player = 0
+    else: 
+        hand.current_player += 1
+    hand.save()
     return redirect('current_hand', table_id)
     
-    
-    
-    
+def check_bet(request, table_id, hand_id, player_id):
+    players = Player.objects.filter(table_id=table_id)
+    hand = get_object_or_404(Hand, id=hand_id)
+    if hand.current_player >= len(players) - 1:
+        hand.current_player = 0
+    else: 
+        hand.current_player += 1
+    hand.save()
+    return redirect('current_hand', table_id)

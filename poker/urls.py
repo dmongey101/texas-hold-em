@@ -1,5 +1,5 @@
 from django.urls import path
-from poker.views import create_table, find_table, view_table, get_current_hand, join_table, leave_table, deal_cards, fold_hand, bet, raise_bet, call_bet
+from poker.views import create_table, find_table, view_table, get_current_hand, join_table, leave_table, deal_cards, fold_hand, bet, raise_bet, call_bet, check_bet
 
 urlpatterns = [
     path('create_table/', create_table, name="create_table"),
@@ -13,4 +13,5 @@ urlpatterns = [
     path('game/hand/bet/<int:table_id>/<int:hand_id>/<int:player_id>', bet, name='bet'),
     path('game/hand/raise/<int:table_id>/<int:hand_id>/<int:player_id>', raise_bet, name='raise'),
     path('game/hand/call/<int:table_id>/<int:hand_id>/<int:player_id>', call_bet, name='call'),
+    path('game/hand/check/<int:table_id>/<int:hand_id>/<int:player_id>', check_bet, name='check'),
  ]
