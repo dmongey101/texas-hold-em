@@ -24,11 +24,14 @@
 {% endif %}
 
 {% if player.user == request.user and player.is_active %}
-<p>{{ player.card_1 }}
-{{ player.card_2 }}</p>
+<p><img src="/static/images/{{ player.card_1 }}.png" class="card_image">
+<img src="/static/images/{{ player.card_2 }}.png" class="card_image"></p>
+{% else %}
+<p><img src="/static/images/blue_back.png" class="card_image">
+<img src="/static/images/blue_back.png" class="card_image"></p>
 {% endif %}
 
-{% if hand != None and player.user == request.user and player.is_active %}
+{% if hand != None and player.user == request.user and player.is_active and player.seat_num == hand.current_player %}
 
 <form method="POST" action="{% url 'fold' hand.id player.id %}">
     {% csrf_token %}
@@ -68,35 +71,41 @@
 <br>
 {% endfor %}
 
+<hr>
+<div><h4>
+{% if hand.check_no >= no_of_preflop_players  %}
+    <img src="/static/images/{{ hand.card_1 }}.png" class="card_image">
+    <img src="/static/images/{{ hand.card_2 }}.png" class="card_image">
+    <img src="/static/images/{{ hand.card_3 }}.png" class="card_image">
+{% endif %}
+
+{% if hand.check_no >= no_of_flop_players %}
+    <img src="/static/images/{{ hand.card_4 }}.png" class="card_image">
+{% endif %}
+
+{% if hand.check_no >= no_of_turn_players %}
+    <img src="/static/images/{{ hand.card_5 }}.png" class="card_image">
+{% endif %}
+</h4></div>
+<hr>
+<h5>Winner: 
+{% for winner in hand.winner.all %}
+{% if hand.check_no == no_of_river_players %}
+{{ winner }}
+{% endif %}
+{% endfor %}
+</h5>
+
 <h4>Current Player: <i>{{ hand.current_player }}</i></h4>
+
+<h4>Raise Amount: <i>{{ hand.player_bet }}</i></h4>
 
 <h3>Current Bet: <i>{{ hand.sub_pot }}</i></h3>
 
 <h3>Pot: <i>{{ hand.pot }}</i></h3>
 <hr>
 
-<button class="btn btn-primary" onclick="show_cards('flop')">Show Flop</button>
-<div id="show_flop" class="hidden_card">
-    {{ hand.card_1 }}
-    {{ hand.card_2 }}
-    {{ hand.card_3 }}
-</div>
 
-
-<button class="btn btn-primary" onclick="show_cards('turn')">Show Turn</button>
-<div id="show_turn" class="hidden_card">
-    {{ hand.card_4 }}
-</div>
-
-<button class="btn btn-primary" onclick="show_cards('river')">Show River</button>
-<div id="show_river" class="hidden_card">
-    {{ hand.card_5 }}
-</div>
-
-<button class="btn btn-primary" onclick="show_cards('winner')">Show Winner</button>
-<div id="show_winner" class="hidden_card">
-    <h3>Winner: {{ winner }}</h3>
-</div>
 
 <form method="POST" action="{% url 'deal' table.id %}">
     {% csrf_token %}

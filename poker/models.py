@@ -37,8 +37,10 @@ class Hand(models.Model):
     card_5 = models.CharField(max_length=3)
     players = models.ManyToManyField(Player)
     current_player = models.IntegerField(default=0)
+    player_bet = models.IntegerField(default=0)
     sub_pot = models.IntegerField(default=0)
     pot = models.IntegerField(default=0)
+    check_no = models.IntegerField(default=0)
     winner = models.ManyToManyField(Player, related_name="winning_hands")
     
     

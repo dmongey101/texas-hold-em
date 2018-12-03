@@ -126,3 +126,8 @@ a, a:hover {
 .hidden_card {
     display: none;
 }
+
+.card_image {
+    width: 50px;
+    height: 100px;
+}
