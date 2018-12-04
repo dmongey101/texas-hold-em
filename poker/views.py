@@ -58,13 +58,18 @@ def get_current_hand(request, id):
     
     results = poker.determine_score(community_cards, players_hands)
     determine_winner = poker.determine_winner(results)
-    winner = players[determine_winner]
-    hand.winner.add(winner)
     
+    if determine_winner in range(len(players)):
+        winner = players[determine_winner]
+        hand.winner.add(winner)
+    else:
+        for i in determine_winner:
+            winner = players[i]
+            hand.winner.add(winner)
     
+    context = {"table" : table, "players" : players, "hand" : hand, "no_of_preflop_players" : no_of_preflop_players, "no_of_flop_players" : no_of_flop_players, "no_of_turn_players" : no_of_turn_players, "no_of_river_players" : no_of_river_players}
     
-    
-    return render(request, "poker/current_hand.html", {"table" : table, "players" : players, "hand" : hand, "no_of_preflop_players" : no_of_preflop_players, "no_of_flop_players" : no_of_flop_players, "no_of_turn_players" : no_of_turn_players, "no_of_river_players" : no_of_river_players})
+    return render(request, "poker/current_hand.html", context)
 
 def join_table(request, id):
     player = Player()
@@ -150,9 +155,7 @@ def bet(request, table_id, hand_id, player_id):
         hand.check_no = len(players) + 1
     if hand.check_no >= (len(players) * 2) and hand.check_no < (len(players) * 3):
         hand.check_no = (len(players) * 2) + 1
-    # else: 
-    #     hand.check_no = (len(players) * 3) + 1
-        
+
     if hand.current_player >= len(players) - 1:
         hand.current_player = 0
     else: 
@@ -167,11 +170,15 @@ def raise_bet(request, table_id, hand_id, player_id):
     hand = get_object_or_404(Hand, id=hand_id)
     player = get_object_or_404(Player, id=player_id)
     amount = request.POST['raise']
-    player.chips -= (int(amount) +  hand.sub_pot)
+    hand.sub_pot = 0
+    hand.sub_pot = int(amount) + hand.player_bet
+    player.chips -= hand.sub_pot
     player.save()
-    hand.pot += (int(amount) +  hand.sub_pot)
-    hand.player_bet = (int(amount) +  hand.sub_pot)
-    hand.sub_pot += int(amount)
+    print(hand.sub_pot)
+    hand.player_bet = 0
+    hand.pot +=  hand.sub_pot
+    hand.player_bet = int(amount)
+    
     if hand.check_no < len(players):
         hand.check_no = 1
     if hand.check_no >= len(players) and hand.check_no < (len(players) * 2):
@@ -179,8 +186,7 @@ def raise_bet(request, table_id, hand_id, player_id):
     if hand.check_no >= (len(players) * 2) and hand.check_no < (len(players) * 3):
         hand.check_no = (len(players) * 2) + 1
     if hand.check_no >= (len(players) * 3) and hand.check_no < (len(players) * 4):
-        hand.check_no = (len(players) * 3) + 1
-    
+        hand.check_no = (len(players) * 3)
     
     if hand.current_player >= len(players) - 1:
         hand.current_player = 0
@@ -193,10 +199,10 @@ def call_bet(request, table_id, hand_id, player_id):
     players = Player.objects.filter(table_id=table_id)
     hand = get_object_or_404(Hand, id=hand_id)
     player = get_object_or_404(Player, id=player_id)
-    raise_amount = hand.sub_pot - hand.player_bet
-    player.chips -= raise_amount
+    player.chips -= hand.player_bet
     player.save()
-    hand.pot += raise_amount
+    hand.pot += hand.player_bet
+    hand.player_bet = 0
     hand.check_no += 1
     if hand.check_no == len(players) or hand.check_no == len(players) * 2 or hand.check_no == len(players) * 3 or hand.check_no == len(players) * 4:
         hand.sub_pot = 0
@@ -205,12 +211,13 @@ def call_bet(request, table_id, hand_id, player_id):
     else: 
         hand.current_player += 1
     hand.save()
-    if hand.check_no == len(players) * 4:
+    if hand.check_no == (len(players) * 4) - 1:
         for winner in hand.winner.all():
             for player in players:
                 if str(player.user) == str(winner):
                     player.chips += hand.pot
                     player.save()
+                    hand.sub_pot = 0
                     hand.pot = 0
                     hand.save()
                     
