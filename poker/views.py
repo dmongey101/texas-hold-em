@@ -155,7 +155,8 @@ def bet(request, table_id, hand_id, player_id):
         hand.check_no = len(players) + 1
     if hand.check_no >= (len(players) * 2) and hand.check_no < (len(players) * 3):
         hand.check_no = (len(players) * 2) + 1
-
+    if hand.check_no >= (len(players) * 3) and hand.check_no < (len(players) * 4):
+        hand.check_no = (len(players) * 3) + 1
     if hand.current_player >= len(players) - 1:
         hand.current_player = 0
     else: 
@@ -186,7 +187,7 @@ def raise_bet(request, table_id, hand_id, player_id):
     if hand.check_no >= (len(players) * 2) and hand.check_no < (len(players) * 3):
         hand.check_no = (len(players) * 2) + 1
     if hand.check_no >= (len(players) * 3) and hand.check_no < (len(players) * 4):
-        hand.check_no = (len(players) * 3)
+        hand.check_no = (len(players) * 3) + 1
     
     if hand.current_player >= len(players) - 1:
         hand.current_player = 0
@@ -211,7 +212,7 @@ def call_bet(request, table_id, hand_id, player_id):
     else: 
         hand.current_player += 1
     hand.save()
-    if hand.check_no == (len(players) * 4) - 1:
+    if hand.check_no == len(players) * 4:
         for winner in hand.winner.all():
             for player in players:
                 if str(player.user) == str(winner):
@@ -233,6 +234,3 @@ def check_bet(request, table_id, hand_id, player_id):
         hand.current_player += 1
     hand.save()
     return redirect('current_hand', table_id)
-
-
-
