@@ -232,5 +232,14 @@ def check_bet(request, table_id, hand_id, player_id):
         hand.current_player = 0
     else: 
         hand.current_player += 1
+    if hand.check_no == len(players) * 4:
+        for winner in hand.winner.all():
+            for player in players:
+                if str(player.user) == str(winner):
+                    player.chips += hand.pot
+                    player.save()
+                    hand.sub_pot = 0
+                    hand.pot = 0
+                    
     hand.save()
     return redirect('current_hand', table_id)
