@@ -2,13 +2,16 @@
 {% block content %}
 
 {% for table in tables %}
-<p>{{ table.name }}
+<p>{{ table.name }}</p>
+{% if table.is_active %}
+<b>Table is full</b>
+{% else %}
 <form method="POST" action="{% url 'view_table' table.id %}">
     {% csrf_token %}
     <input type="submit" value="View Table"/>
-</form></p>
-
-
+</form>
+{% endif %}
+<hr>
 {% endfor %}
 
 

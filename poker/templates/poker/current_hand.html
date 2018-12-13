@@ -1,4 +1,13 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
 {% load static from staticfiles %}
 {% block content %}
 
@@ -24,21 +33,21 @@
 {% endif %}
 
 {% if player.user == request.user and player.is_active %}
-<p><img src="/static/images/{{ player.card_1 }}.png" class="card_image">
-<img src="/static/images/{{ player.card_2 }}.png" class="card_image"></p>
+<p><img src="/static/images/{{ player.card_1 }}.png" width="50" height="100">
+<img src="/static/images/{{ player.card_2 }}.png" width="50" height="100"></p>
 {% else %}
-<p><img src="/static/images/blue_back.png" class="card_image">
-<img src="/static/images/blue_back.png" class="card_image"></p>
+<p><img src="/static/images/blue_back.png" width="50" height="100">
+<img src="/static/images/blue_back.png" width="50" height="100"></p>
 {% endif %}
 
-{% if hand != None and player.user == request.user and player.is_active and player.seat_num == hand.current_player and hand.check_no < no_of_river_players  %}
+{% if hand != None and player.user == request.user and player.is_active and player.seat_num == hand.current_player and hand.check_no < no_of_river_players %}
 
 <form method="POST" action="{% url 'fold' hand.id player.id %}">
     {% csrf_token %}
     <input type="submit" value="Fold"/>
 </form>
 <br>
-{% if hand.sub_pot == 0 %}
+{% if hand.current_bet == 0 %}
 <form method="POST" action="{% url 'bet' table.id hand.id player.id %}">
     {% csrf_token %}
     <input type="number" step="10" name="bet"/>
@@ -53,14 +62,14 @@
 </form>
 <br>
 {% endif %}
-{% if hand.sub_pot == 0 %} 
+{% if hand.current_bet == 0 %} 
 <form method="POST" action="{% url 'check' table.id hand.id player.id %}">
     {% csrf_token %}
     <input type="submit" value="Check"/>
 </form>
 {% endif %}
 <br>
-{% if hand.sub_pot != 0 %} 
+{% if hand.current_bet != 0 %} 
 <form method="POST" action="{% url 'call' table.id hand.id player.id %}">
     {% csrf_token %}
     <input type="submit" value="Call"/>
@@ -74,17 +83,17 @@
 <hr>
 <div><h4>
 {% if hand.check_no >= no_of_preflop_players  %}
-    <img src="/static/images/{{ hand.card_1 }}.png" class="card_image">
-    <img src="/static/images/{{ hand.card_2 }}.png" class="card_image">
-    <img src="/static/images/{{ hand.card_3 }}.png" class="card_image">
+    <img src="/static/images/{{ hand.card_1 }}.png" width="50" height="100">
+    <img src="/static/images/{{ hand.card_2 }}.png" width="50" height="100">
+    <img src="/static/images/{{ hand.card_3 }}.png" width="50" height="100">
 {% endif %}
 
 {% if hand.check_no >= no_of_flop_players %}
-    <img src="/static/images/{{ hand.card_4 }}.png" class="card_image">
+    <img src="/static/images/{{ hand.card_4 }}.png" width="50" height="100">
 {% endif %}
 
 {% if hand.check_no >= no_of_turn_players %}
-    <img src="/static/images/{{ hand.card_5 }}.png" class="card_image">
+    <img src="/static/images/{{ hand.card_5 }}.png" width="50" height="100">
 {% endif %}
 </h4></div>
 <hr>
@@ -98,9 +107,9 @@
 
 <h4>Current Player: <i>{{ hand.current_player }}</i></h4>
 
-<h4>Raise Amount: <i>{{ hand.player_bet }}</i></h4>
+<h4>Raise Amount: <i>{{ hand.raise_amount }}</i></h4>
 
-<h3>Current Bet: <i>{{ hand.sub_pot }}</i></h3>
+<h3>Current Bet: <i>{{ hand.current_bet }}</i></h3>
 
 <h3>Pot: <i>{{ hand.pot }}</i></h3>
 <hr>

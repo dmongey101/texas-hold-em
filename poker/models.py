@@ -6,7 +6,9 @@ from django.contrib.auth.models import User
 class Table(models.Model):
     
     name = models.CharField(max_length=50)
+    no_of_players = models.IntegerField(default=0)
     blinds = models.IntegerField(default=10)
+    is_active = models.BooleanField(default=False)
     
     
     def __str__(self):
@@ -21,6 +23,7 @@ class Player(models.Model):
     seat_num = models.IntegerField(default=0)
     card_1 = models.CharField(max_length=3, default="")
     card_2 = models.CharField(max_length=3, default="")
+    player_pot = models.IntegerField(default=0)
     
     def __str__(self):
         return self.user.username 
@@ -37,9 +40,11 @@ class Hand(models.Model):
     card_5 = models.CharField(max_length=3)
     players = models.ManyToManyField(Player)
     current_player = models.IntegerField(default=0)
-    player_bet = models.IntegerField(default=0)
-    sub_pot = models.IntegerField(default=0)
+    raise_amount = models.IntegerField(default=0)
+    current_bet = models.IntegerField(default=0)
+    player_pot = models.IntegerField(default=0)
     pot = models.IntegerField(default=0)
+    no_of_active_players = models.IntegerField(default=0)
     check_no = models.IntegerField(default=0)
     winner = models.ManyToManyField(Player, related_name="winning_hands")
     
