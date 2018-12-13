@@ -52,23 +52,43 @@ def get_current_hand(request, id):
     community_cards = [card1, card2, card3, card4, card5]
     players_hands = []
     for player in players:
-        players_hands.append([Card.from_str(player.card_1), Card.from_str(player.card_2)])
+        if hand.check_no == len(players) * 4 and player.is_active:
+            players_hands.append([Card.from_str(player.card_1), Card.from_str(player.card_2)])
+            results = poker.determine_score(community_cards, players_hands)
+            determine_winner = poker.determine_winner(results)
+            print(determine_winner)
+            if determine_winner in range(len(players)):
+                winner = players[determine_winner]
+                hand.winner.add(winner)
+            else:
+                for i in determine_winner:
+                    winner = players[i]
+                    hand.winner.add(winner)
+        for winner in hand.winner.all():
+            if player == winner:
+                player.chips += hand.pot
+                hand.pot = 0
     
-    results = poker.determine_score(community_cards, players_hands)
-    determine_winner = poker.determine_winner(results)
-    
-    if determine_winner in range(len(players)):
-        winner = players[determine_winner]
-        hand.winner.add(winner)
-    else:
-        for i in determine_winner:
-            winner = players[i]
-            hand.winner.add(winner)
-    
+    for p in players_hands:
+        for l in p:
+            print(l)
     if hand.check_no == len(players) or hand.check_no == len(players) * 2 or hand.check_no == len(players) * 3 or hand.check_no == len(players) * 4:
+        hand.current_bet = 0
+        hand.raise_amount = 0
+        hand.player_pot = 0
         for player in players:
             player.player_pot = 0
             player.save()
+    for player in players:
+        if player.seat_num == hand.current_player:
+            if not player.is_active:
+                hand.current_player += 1
+                hand.check_no += 1
+        
+        if hand.current_player >= len(players):
+            hand.current_player = 0
+        hand.save()
+        
     
     context = {"table" : table, "players" : players, "hand" : hand, "no_of_preflop_players" : no_of_preflop_players, "no_of_flop_players" : no_of_flop_players, "no_of_turn_players" : no_of_turn_players, "no_of_river_players" : no_of_river_players}
     
@@ -145,6 +165,7 @@ def fold_hand(request, hand_id, player_id):
     hand = Hand.objects.get(id=hand_id)
     hand.players.remove(p)
     hand.current_player += 1
+    hand.check_no += 1
     hand.save()
     table_id = hand.table_id
     
