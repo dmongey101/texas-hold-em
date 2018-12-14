@@ -13,10 +13,10 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% endblock head_styles %}
 
-    {% block head_scripts %}
+    {% block head_js %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    {% endblock head_scripts %}
+    {% endblock head_js %}
 
 </head>
 <body>
@@ -36,6 +36,7 @@
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
                     {% if user.is_authenticated %}
+                    <li><a href="{% url 'pay' %}"><i class="fa fa-plus"></i>Donation</a></li>
                     <li><a href="{% url 'create_table' %}"><i class="fa fa-plus"></i>Create Table</a></li>
                     <li><a href="{% url 'find_table' %}"><i class="fa fa-plus"></i>Find Table</a></li>
                     <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i>Logout</a></li>
@@ -76,7 +77,7 @@
         </div>
     </footer>
     {% block bottom_scripts %}
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     {% endblock %}
     
     

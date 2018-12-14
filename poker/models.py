@@ -18,7 +18,7 @@ class Player(models.Model):
     
     user = models.OneToOneField(User, related_name='player', on_delete=models.CASCADE, null=False, default=1)
     table = models.ForeignKey(Table, default=1, related_name='players', on_delete=models.CASCADE)
-    chips = models.IntegerField(default=1000)
+    chips = models.PositiveIntegerField(default=1000)
     is_active = models.BooleanField(default=True)
     seat_num = models.IntegerField(default=0)
     card_1 = models.CharField(max_length=3, default="")
@@ -27,8 +27,6 @@ class Player(models.Model):
     
     def __str__(self):
         return self.user.username 
-    
-    
 
 class Hand(models.Model):
     
@@ -51,8 +49,6 @@ class Hand(models.Model):
     
     def __str__(self):
         return "{0} : Hand {1}".format(self.table.name, self.id)
-    
-    
     
     
     

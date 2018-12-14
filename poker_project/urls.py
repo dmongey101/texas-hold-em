@@ -18,6 +18,7 @@ from django.views.static import serve
 from django.conf import settings
 from poker.views import show_index
 from accounts.views import signup
+from donations.views import donations
 from poker import urls as poker_urls
 
 urlpatterns = [
@@ -26,5 +27,6 @@ urlpatterns = [
     path('signup/', signup, name='signup'),
     path('poker/', include(poker_urls)),
     path('', show_index, name='index'),
+    path('donations/pay/', donations, name='pay'),
     path('media/<path:path>', serve, {'document_root': settings.MEDIA_ROOT}),
 ]

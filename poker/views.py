@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .holdem import Poker
 from .deck import Card
-from .forms import CreateTableForm, CreatePlayerForm, CreateHandForm
+from .forms import CreateTableForm
 from .models import Table, Player, Hand
 import sys, random
 
@@ -20,7 +20,7 @@ def create_table(request):
         return redirect('view_table', table.id)
     else:
         form = CreateTableForm()
-        return render(request, "poker/create_table_form.html", {'form': form})
+        return render(request, "poker/create_table_form.html", {"form" : form})
         
 def find_table(request):
     tables = Table.objects.all()
@@ -30,8 +30,10 @@ def view_table(request, id):
     table = get_object_or_404(Table, pk=id)
     players = Player.objects.filter(table=table)
     hand = Hand.objects.last()
+    
     if len(players) == table.no_of_players:
         return redirect(get_current_hand, id)
+        
     return render(request, "poker/view_table.html", {"table" : table, "players" : players, "hand" : hand})
 
 def get_current_hand(request, id):  
@@ -51,34 +53,51 @@ def get_current_hand(request, id):
     card5 = Card.from_str(hand.card_5)
     community_cards = [card1, card2, card3, card4, card5]
     players_hands = []
+    active_players = []
+    active_players.reverse()
+    
     for player in players:
-        if hand.check_no == len(players) * 4 and player.is_active:
+        if (hand.check_no == len(players) * 4 and 
+            player.is_active) :
             players_hands.append([Card.from_str(player.card_1), Card.from_str(player.card_2)])
             results = poker.determine_score(community_cards, players_hands)
             determine_winner = poker.determine_winner(results)
-            print(determine_winner)
-            if determine_winner in range(len(players)):
-                winner = players[determine_winner]
+       
+            if player.is_active:
+                active_players.append(player)
+            
+            if determine_winner in range(len(active_players)):
+                winner = active_players[determine_winner]
                 hand.winner.add(winner)
             else:
                 for i in determine_winner:
-                    winner = players[i]
+                    winner = active_players[i]
                     hand.winner.add(winner)
+        
         for winner in hand.winner.all():
             if player == winner:
                 player.chips += hand.pot
                 hand.pot = 0
-    
-    for p in players_hands:
-        for l in p:
-            print(l)
-    if hand.check_no == len(players) or hand.check_no == len(players) * 2 or hand.check_no == len(players) * 3 or hand.check_no == len(players) * 4:
+                
+        if hand.check_no == len(players) * 4:
+            if player.chips == 0:
+                p = Player.objects.get(id=player.id)
+                p.delete()
+                return redirect('current_hand', id)
+                
+    if (hand.check_no == len(players) or 
+        hand.check_no == len(players) * 2 or 
+        hand.check_no == len(players) * 3 or 
+        hand.check_no == len(players) * 4) :
+            
         hand.current_bet = 0
         hand.raise_amount = 0
         hand.player_pot = 0
+        
         for player in players:
             player.player_pot = 0
             player.save()
+    
     for player in players:
         if player.seat_num == hand.current_player:
             if not player.is_active:
@@ -89,8 +108,11 @@ def get_current_hand(request, id):
             hand.current_player = 0
         hand.save()
         
-    
-    context = {"table" : table, "players" : players, "hand" : hand, "no_of_preflop_players" : no_of_preflop_players, "no_of_flop_players" : no_of_flop_players, "no_of_turn_players" : no_of_turn_players, "no_of_river_players" : no_of_river_players}
+    context = {"table" : table, "players" : players, "hand" : hand,
+                "no_of_preflop_players" : no_of_preflop_players, 
+                "no_of_flop_players" : no_of_flop_players,
+                "no_of_turn_players" : no_of_turn_players, 
+                "no_of_river_players" : no_of_river_players}
     
     return render(request, "poker/current_hand.html", context)
 
@@ -101,6 +123,7 @@ def join_table(request, id):
     player.table_id = id
     player.user = request.user
     player.save()
+    
     if len(players) == table.no_of_players:
         table.is_active = True
         table.save()
@@ -178,18 +201,29 @@ def bet(request, table_id, hand_id, player_id):
     amount = request.POST['bet']
     hand.pot += int(amount)
     hand.current_bet += int(amount)
-    if hand.check_no < len(players):
+    if  hand.check_no < len(players):
         hand.check_no = 1
-    if hand.check_no >= len(players) and hand.check_no < (len(players) * 2):
+        
+    if (hand.check_no >= len(players) and 
+        hand.check_no < (len(players) * 2)) :
+            
         hand.check_no = len(players) + 1
-    if hand.check_no >= (len(players) * 2) and hand.check_no < (len(players) * 3):
+        
+    if (hand.check_no >= (len(players) * 2) and 
+        hand.check_no < (len(players) * 3)) :
+            
         hand.check_no = (len(players) * 2) + 1
-    if hand.check_no >= (len(players) * 3) and hand.check_no < (len(players) * 4):
+        
+    if (hand.check_no >= (len(players) * 3) and 
+        hand.check_no < (len(players) * 4)) :
+            
         hand.check_no = (len(players) * 3) + 1
-    if hand.current_player >= len(players) - 1:
+        
+    if  hand.current_player >= len(players) - 1:
         hand.current_player = 0
     else: 
         hand.current_player += 1
+        
     player.player_pot += int(amount)
     hand.player_pot = player.player_pot
     player.chips -= int(amount)
@@ -211,46 +245,68 @@ def raise_bet(request, table_id, hand_id, player_id):
     player.chips -= (player.player_pot - old_player_pot)
     player.save()
     hand.pot +=  (player.player_pot - old_player_pot)
+    
     if hand.check_no < len(players):
         hand.check_no = 1
-    if hand.check_no >= len(players) and hand.check_no < (len(players) * 2):
+    
+    if (hand.check_no >= len(players) and 
+        hand.check_no < (len(players) * 2)) :
+            
         hand.check_no = len(players) + 1
-    if hand.check_no >= (len(players) * 2) and hand.check_no < (len(players) * 3):
+    
+    if (hand.check_no >= (len(players) * 2) and
+        hand.check_no < (len(players) * 3)) :
+            
         hand.check_no = (len(players) * 2) + 1
-    if hand.check_no >= (len(players) * 3) and hand.check_no < (len(players) * 4):
+    
+    if (hand.check_no >= (len(players) * 3) and 
+        hand.check_no < (len(players) * 4)) :
+            
         hand.check_no = (len(players) * 3) + 1
     
     if hand.current_player >= len(players) - 1:
         hand.current_player = 0
     else: 
         hand.current_player += 1
+    
     hand.save()
+    
     return redirect('current_hand', table_id)
     
 def call_bet(request, table_id, hand_id, player_id):
     players = Player.objects.filter(table_id=table_id)
     hand = get_object_or_404(Hand, id=hand_id)
     player = get_object_or_404(Player, id=player_id)
+    
     if hand.raise_amount != 0:
         hand.raise_amount = hand.current_bet - hand.raise_amount
     else:
         hand.raise_amount = 0
+        
     old_player_pot = player.player_pot
     hand.current_bet -= hand.raise_amount
     player.player_pot = hand.player_pot
     player.chips -= (player.player_pot - old_player_pot)
     hand.pot += (player.player_pot - old_player_pot)
     hand.check_no += 1
-    if hand.check_no == len(players) or hand.check_no == len(players) * 2 or hand.check_no == len(players) * 3 or hand.check_no == len(players) * 4:
+    
+    if (hand.check_no == len(players) or 
+        hand.check_no == len(players) * 2 or 
+        hand.check_no == len(players) * 3 or 
+        hand.check_no == len(players) * 4) :
+            
         hand.current_bet = 0
         hand.raise_amount = 0
         hand.player_pot = 0
+            
     if hand.current_player >= len(players) - 1:
         hand.current_player = 0
     else: 
         hand.current_player += 1
+        
     hand.save()
     player.save()
+    
     if hand.check_no == len(players) * 4:
         for winner in hand.winner.all():
             for player in players:
@@ -267,10 +323,12 @@ def check_bet(request, table_id, hand_id, player_id):
     players = Player.objects.filter(table_id=table_id)
     hand = get_object_or_404(Hand, id=hand_id)
     hand.check_no += 1
+    
     if hand.current_player >= len(players) - 1:
         hand.current_player = 0
     else: 
         hand.current_player += 1
+        
     if hand.check_no == len(players) * 4:
         for winner in hand.winner.all():
             for player in players:
@@ -281,3 +339,4 @@ def check_bet(request, table_id, hand_id, player_id):
                     hand.pot = 0
     hand.save()
     return redirect('current_hand', table_id)
+    

@@ -50,14 +50,14 @@
 {% if hand.current_bet == 0 %}
 <form method="POST" action="{% url 'bet' table.id hand.id player.id %}">
     {% csrf_token %}
-    <input type="number" step="10" name="bet"/>
+    <input type="number" step="{{ table.blinds }}" name="bet"/>
     <input type="submit" value="Bet"/>
 </form>
 <br>
 {% else %}
 <form method="POST" action="{% url 'raise' table.id hand.id player.id %}">
     {% csrf_token %}
-    <input type="number" step="10" name="raise"/>
+    <input type="number" step="{{ table.blinds }}" name="raise"/>
     <input type="submit" value="Raise"/>
 </form>
 <br>
@@ -125,6 +125,6 @@
 {% endblock %}
 
 {% block bottom_scripts %}
-    <script type="text/javascript" src="{% static 'js/show_cards.js' %}"></script>
+    
 {% endblock %}
 
