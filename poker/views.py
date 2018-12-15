@@ -293,7 +293,6 @@ def call_bet(request, table_id, hand_id, player_id):
         hand.raise_amount = hand.current_bet - hand.raise_amount
     else:
         hand.raise_amount = 0
-        
     old_player_pot = player.player_pot
     hand.current_bet -= hand.raise_amount
     player.player_pot = hand.player_pot

@@ -13,6 +13,32 @@ html, body {
     margin-top: 5%;
 }
 
+.input {
+    opacity: 0.2;
+}
 
 
+.fold_btn {
+    border-radius: 100%;
+    background-color: red;
+}
+.bet_btn {
+    border-radius: 100%;
+    background-color: blue;
+}
+.check_btn {
+    border-radius: 100%;
+    background-color: yellow;
+}
+.call_btn {
+    border-radius: 100%;
+    background-color: yellow;
+}
+.raise_btn {
+    border-radius: 100%;
+    background-color: blue;
+}
 
+.inline {
+    display: inline-block;
+}

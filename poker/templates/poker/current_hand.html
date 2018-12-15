@@ -16,7 +16,7 @@
 <div class="container">
     <div class="row">
         <div class="col heading">
-<h3>{{ table.name }}</h3>
+            <h3>{{ table.name }}</h3>
         </div>
     </div>
 
@@ -35,56 +35,83 @@
 {% for player in players %}
 
     <div class="col-sm-6 col-md-4 col-lg-3">
-<p>{{ player.user }} - <i>${{ player.chips }}</i></p>
+        
+        <div class="row">
+            <div class="col-12">
+                <p>{{ player.user }} - <i>${{ player.chips }}</i></p>
+            </div>
+        
+        {% if player.is_active == False %}
+        <div class="row">
+            <div class="col-12">
+                <p>Folded</p>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if player.user == request.user and player.is_active %}
+        
+        <div class="row">
+            <div class="col-12">
+        <img src="/static/images/{{ player.card_1 }}.png" width="50" height="100">
+        <img src="/static/images/{{ player.card_2 }}.png" width="50" height="100">
+            </div>
+        {% else %}
+        <div class="row">
+            <div class="col-12">
+        <img src="/static/images/blue_back.png" width="50" height="100">
+        <img src="/static/images/blue_back.png" width="50" height="100">
+            </div>
+        </div>
+        {% endif %}
 
-{% if player.is_active == False %}
-<p>Folded</p>
-{% endif %}
-
-{% if player.user == request.user and player.is_active %}
-<p><img src="/static/images/{{ player.card_1 }}.png" width="50" height="100">
-<img src="/static/images/{{ player.card_2 }}.png" width="50" height="100"></p>
-{% else %}
-<p><img src="/static/images/blue_back.png" width="50" height="100">
-<img src="/static/images/blue_back.png" width="50" height="100"></p>
-{% endif %}
 
 {% if hand != None and player.user == request.user and player.is_active and player.seat_num == hand.current_player and hand.check_no < no_of_river_players %}
-
+<div class="row">
+    <div class="col-12 inline">
+        
 <form method="POST" action="{% url 'fold' hand.id player.id %}">
     {% csrf_token %}
-    <input type="submit" value="Fold"/>
+    <input class="fold_btn" type="submit" value="Fold"/>
 </form>
+{% if hand.current_bet == 0 %} 
+
+<form method="POST" action="{% url 'check' table.id hand.id player.id %}">
+    {% csrf_token %}
+    <input class="check_btn" type="submit" value="Check"/>
+</form>
+    </div>
+</div>
+{% else %}
+<form method="POST" action="{% url 'call' table.id hand.id player.id %}">
+    {% csrf_token %}
+    <input class="call_btn" type="submit" value="Call"/>
+</form>
+    </div>
+</div>
+{% endif %}
+
 <br>
+
 {% if hand.current_bet == 0 %}
+<div class="row">
+    <div class="col">
 <form method="POST" action="{% url 'bet' table.id hand.id player.id %}">
     {% csrf_token %}
-    <input type="number" step="{{ table.blinds }}" name="bet"/>
-    <input type="submit" value="Bet"/>
+    <input class="bet_btn" type="submit" value="Bet"/>
+    <input class="input" type="number" step="{{ table.blinds }}" name="bet"/>
 </form>
-<br>
 {% else %}
 <form method="POST" action="{% url 'raise' table.id hand.id player.id %}">
     {% csrf_token %}
-    <input type="number" step="{{ table.blinds }}" name="raise"/>
-    <input type="submit" value="Raise"/>
+    <input class="raise_btn" type="submit" value="Raise"/>
+    <input class="input" type="number" step="{{ table.blinds }}" name="raise"/>
 </form>
 <br>
+   </div>
+</div>
 {% endif %}
-{% if hand.current_bet == 0 %} 
-<form method="POST" action="{% url 'check' table.id hand.id player.id %}">
-    {% csrf_token %}
-    <input type="submit" value="Check"/>
-</form>
-{% endif %}
-<br>
-{% if hand.current_bet != 0 %} 
-<form method="POST" action="{% url 'call' table.id hand.id player.id %}">
-    {% csrf_token %}
-    <input type="submit" value="Call"/>
-</form>
-{% endif %}
-
+ 
 {% endif %}
 <br>
 </div>
@@ -93,7 +120,8 @@
 
 </div>
 <hr>
-<div><h4>
+<div class="row">
+    <div class="col">
 {% if hand.check_no >= no_of_preflop_players  %}
     <img src="/static/images/{{ hand.card_1 }}.png" width="50" height="100">
     <img src="/static/images/{{ hand.card_2 }}.png" width="50" height="100">
@@ -107,8 +135,11 @@
 {% if hand.check_no >= no_of_turn_players %}
     <img src="/static/images/{{ hand.card_5 }}.png" width="50" height="100">
 {% endif %}
-</h4></div>
+    </div>
+</div>
 <hr>
+<div class="row">
+    <div class="col">
 <h5>Winner: 
 {% for winner in hand.winner.all %}
 {% if hand.check_no == no_of_river_players %}
@@ -125,6 +156,8 @@
 
 <h3>Pot: <i>{{ hand.pot }}</i></h3>
 <hr>
+</div>
+</div>
 
 
 {% if hand == None or hand.check_no == no_of_river_players %}
