@@ -5,7 +5,8 @@ from .holdem import Poker
 from .deck import Card
 from .forms import CreateTableForm
 from .models import Table, Player, Hand
-import sys, random
+import sys 
+import random
 
 def show_index(request):
     return render(request, "poker/index.html")
@@ -59,9 +60,11 @@ def get_current_hand(request, id):
     for player in players:
         if (hand.check_no == len(players) * 4 and 
             player.is_active) :
+                
             players_hands.append([Card.from_str(player.card_1), Card.from_str(player.card_2)])
             results = poker.determine_score(community_cards, players_hands)
             determine_winner = poker.determine_winner(results)
+            print(determine_winner)
        
             if player.is_active:
                 active_players.append(player)
@@ -75,7 +78,10 @@ def get_current_hand(request, id):
                     hand.winner.add(winner)
         
         for winner in hand.winner.all():
-            if player == winner:
+            if len(hand.winner.all()) > 1:
+                player.chips += (hand.pot/len(hand.winner.all()))
+                
+            elif player == winner:
                 player.chips += hand.pot
                 hand.pot = 0
                 
@@ -199,6 +205,8 @@ def bet(request, table_id, hand_id, player_id):
     hand = get_object_or_404(Hand, id=hand_id)
     player = get_object_or_404(Player, id=player_id)
     amount = request.POST['bet']
+    if int(amount) > player.chips:
+        return HttpResponse('Not enough chips')
     hand.pot += int(amount)
     hand.current_bet += int(amount)
     if  hand.check_no < len(players):
@@ -237,6 +245,8 @@ def raise_bet(request, table_id, hand_id, player_id):
     hand = get_object_or_404(Hand, id=hand_id)
     player = get_object_or_404(Player, id=player_id)
     amount = request.POST['raise']
+    if int(amount) > player.chips:
+        return HttpResponse('Not enough chips')
     old_player_pot = player.player_pot
     hand.raise_amount += int(amount)
     hand.current_bet += int(amount)
@@ -277,7 +287,8 @@ def call_bet(request, table_id, hand_id, player_id):
     players = Player.objects.filter(table_id=table_id)
     hand = get_object_or_404(Hand, id=hand_id)
     player = get_object_or_404(Player, id=player_id)
-    
+    if hand.current_bet > player.chips:
+        return HttpResponse('Not enough chips')
     if hand.raise_amount != 0:
         hand.raise_amount = hand.current_bet - hand.raise_amount
     else:
