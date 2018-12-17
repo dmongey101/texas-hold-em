@@ -60,37 +60,37 @@ def get_current_hand(request, id):
     for player in players:
         if (hand.check_no == len(players) * 4 and 
             player.is_active) :
-                
-            players_hands.append([Card.from_str(player.card_1), Card.from_str(player.card_2)])
-            results = poker.determine_score(community_cards, players_hands)
-            determine_winner = poker.determine_winner(results)
-            print(determine_winner)
-       
-            if player.is_active:
+                players_hands.append([Card.from_str(player.card_1), Card.from_str(player.card_2)])
                 active_players.append(player)
-            
+                
+                if player.chips == 0:
+                    p = Player.objects.get(id=player.id)
+                    p.delete()
+                    return redirect('current_hand', id)
+                
+    if hand.check_no == len(players) * 4:
+        results = poker.determine_score(community_cards, players_hands)
+        determine_winner = poker.determine_winner(results)
+        
+    for player in players:
+        if hand.check_no == len(players) * 4: 
             if determine_winner in range(len(active_players)):
                 winner = active_players[determine_winner]
                 hand.winner.add(winner)
             else:
                 for i in determine_winner:
+                    
                     winner = active_players[i]
                     hand.winner.add(winner)
-        
-        for winner in hand.winner.all():
+        if player in hand.winner.all():
             if len(hand.winner.all()) > 1:
+                print(hand.pot/len(hand.winner.all()))
                 player.chips += (hand.pot/len(hand.winner.all()))
                 
             elif player == winner:
                 player.chips += hand.pot
                 hand.pot = 0
-                
-        if hand.check_no == len(players) * 4:
-            if player.chips == 0:
-                p = Player.objects.get(id=player.id)
-                p.delete()
-                return redirect('current_hand', id)
-                
+        
     if (hand.check_no == len(players) or 
         hand.check_no == len(players) * 2 or 
         hand.check_no == len(players) * 3 or 
