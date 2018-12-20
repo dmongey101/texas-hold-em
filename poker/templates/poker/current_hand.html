@@ -38,6 +38,26 @@
 <hr>
 
 <div class="row">
+    <div class="col center">
+{% if hand.check_no >= no_of_preflop_players  %}
+    <img src="/static/images/{{ hand.card_1 }}.png" class="cards">
+    <img src="/static/images/{{ hand.card_2 }}.png" class="cards">
+    <img src="/static/images/{{ hand.card_3 }}.png" class="cards">
+{% endif %}
+
+{% if hand.check_no >= no_of_flop_players %}
+    <img src="/static/images/{{ hand.card_4 }}.png" class="cards">
+{% endif %}
+
+{% if hand.check_no >= no_of_turn_players %}
+    <img src="/static/images/{{ hand.card_5 }}.png" class="cards">
+{% endif %}
+    </div>
+</div>
+
+<br>
+
+<div class="row">
 {% for player in players %}
     {% if player.seat_num == hand.current_player %}
     <div class="col-sm-6 col-md-4 col-lg-3 center active">
@@ -46,7 +66,10 @@
     {% endif %}    
         <div class="row">
             <div class="col-12">
-                <p>{{ player.user }} - <img src="/static/images/poker-chip.png"><i> {{ player.chips }}</i></p>
+                
+                <img src="{{ MEDIA_URL }}{{ player.user.profile.image }}" class="img-circle">
+                
+                <p><img src="/static/images/poker-chip.png"><i> {{ player.chips }}</i></p>
             </div>
         </div>
         
@@ -146,23 +169,7 @@
 {% endfor %}
 
 </div>
-<div class="row">
-    <div class="col center">
-{% if hand.check_no >= no_of_preflop_players  %}
-    <img src="/static/images/{{ hand.card_1 }}.png" class="cards">
-    <img src="/static/images/{{ hand.card_2 }}.png" class="cards">
-    <img src="/static/images/{{ hand.card_3 }}.png" class="cards">
-{% endif %}
 
-{% if hand.check_no >= no_of_flop_players %}
-    <img src="/static/images/{{ hand.card_4 }}.png" class="cards">
-{% endif %}
-
-{% if hand.check_no >= no_of_turn_players %}
-    <img src="/static/images/{{ hand.card_5 }}.png" class="cards">
-{% endif %}
-    </div>
-</div>
 
 {% if hand == None or hand.check_no == no_of_river_players %}
 <form method="POST" action="{% url 'deal' table.id %}">

@@ -4,7 +4,7 @@
 
 <h3>{{ table.name }}</h3>
 <p><b>Starting Blinds: {{ table.blinds }}</b></p>
-{% for player in players %}
+
 {% if user.is_authenticated %}
 {% if not table.is_active %}
 <form method="POST" action="{% url 'join_table' table.id %}">
@@ -15,7 +15,7 @@
 <p>Table is Full</p>
 {% endif %}
 {% endif %}
-{% endfor %}
+
 <hr>
 
 {% for player in players %}
