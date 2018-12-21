@@ -113,6 +113,8 @@ def get_current_hand(request, id):
         if hand.current_player >= len(players):
             hand.current_player = 0
         hand.save()
+    if len(active_players) == 1:
+        hand.check_no = len(players)*4
         
     context = {"table" : table, "players" : players, "hand" : hand,
                 "no_of_preflop_players" : no_of_preflop_players, 
