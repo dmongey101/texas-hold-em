@@ -73,29 +73,35 @@
             </div>
         </div>
         
-        {% if player.is_active == False %}
         <div class="row">
-            <div class="col-12">
+            <div class="col-12 center">
+        {% if hand.check_no == no_of_river_players and player.as_active %}
+                <img src="/static/images/{{ player.card_1 }}.png" class="cards">
+                <img src="/static/images/{{ player.card_2 }}.png" class="cards">
+            </div>
+        </div>
+        {% elif player.user == request.user and player.is_active %}
+        
+                <img src="/static/images/{{ player.card_1 }}.png" class="cards">
+                <img src="/static/images/{{ player.card_2 }}.png" class="cards">
+            </div>
+        </div>
+        {% elif player.is_active == False %}
                 <p>Folded</p>
             </div>
         </div>
-        {% endif %}
-        
-        <div class="row">
-            <div class="col-12 center">
-        {% if player.user == request.user and player.is_active %}
-        
-        <img src="/static/images/{{ player.card_1 }}.png" class="cards">
-        <img src="/static/images/{{ player.card_2 }}.png" class="cards">
-            </div>
-        </div>
         {% else %}
-        <img src="/static/images/blue_back.png" class="cards">
-        <img src="/static/images/blue_back.png" class="cards">
+                <img src="/static/images/blue_back.png" class="cards">
+                <img src="/static/images/blue_back.png" class="cards">
             </div>
         </div>
         {% endif %}
-
+        
+        {% for winner in hand.winner.all %}
+        {% if player == winner %}
+        <h3 class="margin-top">Winner</h3>
+        {% endif %}
+        {% endfor %}
 
     {% if hand != None and player.user == request.user and player.is_active and player.seat_num == hand.current_player and hand.check_no < no_of_river_players %}
     <div class="row">

@@ -79,12 +79,11 @@ def get_current_hand(request, id):
                 hand.winner.add(winner)
             else:
                 for i in determine_winner:
-                    
                     winner = active_players[i]
                     hand.winner.add(winner)
+                    
         if player in hand.winner.all():
             if len(hand.winner.all()) > 1:
-                print(hand.pot/len(hand.winner.all()))
                 player.chips += (hand.pot/len(hand.winner.all()))
                 
             elif player == winner:
@@ -104,6 +103,15 @@ def get_current_hand(request, id):
             player.player_pot = 0
             player.save()
     
+    unfolded_player = []
+    for player in players:
+        if player.is_active:
+            unfolded_player.append(player)
+    
+    if len(unfolded_player) == 1:
+        hand.check_no = len(players) * 4
+        hand.save()
+    
     for player in players:
         if player.seat_num == hand.current_player:
             if not player.is_active:
@@ -113,10 +121,8 @@ def get_current_hand(request, id):
         if hand.current_player >= len(players):
             hand.current_player = 0
         hand.save()
-    if len(active_players) == 1:
-        hand.check_no = len(players)*4
-        
-    context = {"table" : table, "players" : players, "hand" : hand,
+    
+    context =  {"table" : table, "players" : players, "hand" : hand,
                 "no_of_preflop_players" : no_of_preflop_players, 
                 "no_of_flop_players" : no_of_flop_players,
                 "no_of_turn_players" : no_of_turn_players, 
