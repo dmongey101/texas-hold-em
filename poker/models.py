@@ -1,15 +1,18 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 # Create your models here.
 
 class Table(models.Model):
     
     name = models.CharField(max_length=50)
-    no_of_players = models.IntegerField(default=0)
+    no_of_players = models.IntegerField(default=2, validators=[MinValueValidator(2), MaxValueValidator(8)])
     blinds = models.IntegerField(default=10)
     is_active = models.BooleanField(default=False)
-    
+    dealer = models.IntegerField(default=-1)
+    big_blind = models.IntegerField(default=1)
+    small_blind = models.IntegerField(default=0)
     
     def __str__(self):
         return self.name
@@ -42,8 +45,7 @@ class Hand(models.Model):
     current_bet = models.IntegerField(default=0)
     player_pot = models.IntegerField(default=0)
     pot = models.IntegerField(default=0)
-    no_of_active_players = models.IntegerField(default=0)
-    check_no = models.IntegerField(default=0)
+    check_no = models.IntegerField(default=1)
     winner = models.ManyToManyField(Player, related_name="winning_hands")
     
     

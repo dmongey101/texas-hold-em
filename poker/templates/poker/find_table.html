@@ -1,16 +1,28 @@
 {% extends 'base.html' %}
 {% block content %}
 
+
+<div id="masthead" class="row">
+    <h1>Find a Table</h1>
+</div>
+
+
+{% if no_of_tables == 0 %}
+<h3>There are currently no Tables</h3>
+{% endif %}
+
 {% for table in tables %}
-<p>{{ table.name }}</p>
+<h5>{{ table.name }}
 {% if table.is_active %}
-<b>Table is full</b>
-{% else %}
+ - Full
+{% endif %}
+</h5>
+
 <form method="POST" action="{% url 'view_table' table.id %}">
     {% csrf_token %}
-    <input type="submit" value="View Table"/>
+    <button type="submit" class="btn-sm btn-primary">View Table</button>
 </form>
-{% endif %}
+
 <hr>
 {% endfor %}
 

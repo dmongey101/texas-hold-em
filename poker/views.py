@@ -11,6 +11,10 @@ import random
 def show_index(request):
     return render(request, "poker/index.html")
     
+def error_404_view(request, exception):
+    data = {"name": "ThePythonDjango.com"}
+    return render(request,'poker/404.html', data)
+    
 @login_required
 def create_table(request):
     if request.method=="POST":
@@ -25,13 +29,18 @@ def create_table(request):
         
 def find_table(request):
     tables = Table.objects.all()
-    return render(request, "poker/find_table.html", {"tables" : tables})
+    no_of_tables = len(tables)
+    return render(request, "poker/find_table.html", {"tables" : tables, "no_of_tables" : no_of_tables})
         
 def view_table(request, id):
     table = get_object_or_404(Table, pk=id)
     players = Player.objects.filter(table=table)
     hand = Hand.objects.last()
     
+    if table.is_active and len(players) == 0:
+        table.delete()
+        return redirect(find_table)
+        
     if len(players) == table.no_of_players:
         return redirect(get_current_hand, id)
         
@@ -66,7 +75,7 @@ def get_current_hand(request, id):
                 if player.chips == 0:
                     p = Player.objects.get(id=player.id)
                     p.delete()
-                    return redirect('current_hand', id)
+                    return redirect(find_table)
                 
     if hand.check_no == len(players) * 4:
         results = poker.determine_score(community_cards, players_hands)
@@ -86,7 +95,7 @@ def get_current_hand(request, id):
             if len(hand.winner.all()) > 1:
                 player.chips += (hand.pot/len(hand.winner.all()))
                 
-            elif player == winner:
+            if player == winner:
                 player.chips += hand.pot
                 hand.pot = 0
         
@@ -147,7 +156,7 @@ def join_table(request, id):
 def leave_table(request, table_id, player_id):
     table = Table.objects.get(id=table_id)
     player = Player.objects.get(id=player_id).delete()
-    return redirect('view_table', table_id)
+    return redirect(find_table)
     
 def deal_cards(request, id):
     table = get_object_or_404(Table, pk=id)
@@ -158,6 +167,41 @@ def deal_cards(request, id):
     poker.cut(random.randint(1,51))
     hand = Hand()
     hand.table_id = table.id
+    table.dealer += 1
+    if  table.dealer > number_of_players -1:
+        table.dealer = 0
+    table.big_blind += 1
+    if table.big_blind > number_of_players -1:
+        table.big_blind = 0
+    table.small_blind += 1
+    if table.small_blind > number_of_players -1:
+        table.small_blind = 0
+    table.save()
+    
+    for index, item in enumerate(players):
+            item.seat_num = index
+            item.save()
+            
+    for player in players:
+        if player.seat_num == table.small_blind:
+            small_blind = (table.blinds / 2)
+            player.chips -= small_blind
+            player.player_pot += small_blind
+            hand.pot += small_blind
+        
+        if player.seat_num == table.big_blind:
+            big_blind = table.blinds
+            player.chips -= big_blind
+            player.player_pot += big_blind
+            hand.player_pot += big_blind
+            hand.pot += big_blind
+            player.save()
+            
+    hand.current_bet = table.blinds      
+    hand.current_player = table.big_blind + 1
+    hand.save()
+    
+        
     for i in range(2):
         cards = poker.distribute()
         p = 0
@@ -170,7 +214,7 @@ def deal_cards(request, id):
         
         for player in players:
             player.is_active = True
-            player.save()
+            player.save()        
     poker.burnOne()
     card1 = poker.getOne()
     hand.card_1 = card1[0]
@@ -187,10 +231,6 @@ def deal_cards(request, id):
     hand.save()
     for player in players:
         hand.players.add(player)
-        
-    for index, item in enumerate(players):
-        item.seat_num = index
-        item.save()
     
     return redirect('current_hand', id)
         
@@ -304,8 +344,8 @@ def call_bet(request, table_id, hand_id, player_id):
     old_player_pot = player.player_pot
     hand.current_bet -= hand.raise_amount
     player.player_pot = hand.player_pot
-    player.chips -= (player.player_pot - old_player_pot)
-    hand.pot += (player.player_pot - old_player_pot)
+    player.chips -= abs(player.player_pot - old_player_pot)
+    hand.pot += abs(player.player_pot - old_player_pot)
     hand.check_no += 1
     
     if (hand.check_no == len(players) or 

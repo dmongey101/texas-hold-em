@@ -59,10 +59,13 @@
 
 <div class="row">
 {% for player in players %}
+
     {% if player.seat_num == hand.current_player %}
     <div class="col-sm-6 col-md-4 col-lg-3 center active">
+        {{ player.player_pot }}
     {% else %}
     <div class="col-sm-6 col-md-4 col-lg-3 center">
+        {{ player.player_pot }}
     {% endif %}    
         <div class="row">
             <div class="col-12">
@@ -75,7 +78,7 @@
         
         <div class="row">
             <div class="col-12 center">
-        {% if hand.check_no == no_of_river_players and player.as_active %}
+        {% if hand.check_no == no_of_river_players and player.is_active %}
                 <img src="/static/images/{{ player.card_1 }}.png" class="cards">
                 <img src="/static/images/{{ player.card_2 }}.png" class="cards">
             </div>
@@ -172,17 +175,23 @@
     <br>
     </div>
     
+    
 {% endfor %}
 
+{% for player in players %}
+    <div class="row">
+        <div class="col">
+            {% if hand == None or hand.check_no == no_of_river_players %}
+            {% if player.user == request.user and player.seat_num == table.dealer %}
+            <form method="POST" action="{% url 'deal' table.id %}">
+                {% csrf_token %}
+                <input type="submit" class="btn btn-info" value="Deal"/>
+            </form>
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>  
+{% endfor %}
 </div>
-
-
-{% if hand == None or hand.check_no == no_of_river_players %}
-<form method="POST" action="{% url 'deal' table.id %}">
-    {% csrf_token %}
-    <input type="submit" class="btn btn-info" value="Deal"/>
-</form>
-{% endif %}
-   
 </div>
 

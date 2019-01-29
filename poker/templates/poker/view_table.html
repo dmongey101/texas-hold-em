@@ -2,17 +2,20 @@
 {% load static from staticfiles %}
 {% block content %}
 
-<h3>{{ table.name }}</h3>
+<div id="masthead" class="row">
+    <h1>{{ table.name }}</h1>
+</div>
+
 <p><b>Starting Blinds: {{ table.blinds }}</b></p>
 
 {% if user.is_authenticated %}
 {% if not table.is_active %}
 <form method="POST" action="{% url 'join_table' table.id %}">
     {% csrf_token %}
-    <input type="submit" value="Join Table"/>
+    <button type="submit" class="btn btn-primary">Join Table</button>
 </form>
 {% else %}
-<p>Table is Full</p>
+<p>Table is active</p>
 {% endif %}
 {% endif %}
 

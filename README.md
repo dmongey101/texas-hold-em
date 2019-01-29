@@ -107,5 +107,3 @@ hand.pot += (player.player_pot - old_player_pot)
 
 
 ## This project is still in Development 
-
-
