@@ -9,14 +9,16 @@
 <p><b>Starting Blinds: {{ table.blinds }}</b></p>
 
 {% if user.is_authenticated %}
-{% if not table.is_active %}
+{% if user not in player_list and not table.is_active %}
 <form method="POST" action="{% url 'join_table' table.id %}">
     {% csrf_token %}
     <button type="submit" class="btn btn-primary">Join Table</button>
 </form>
-{% else %}
-<p>Table is active</p>
 {% endif %}
+{% endif %}
+
+{% if table.is_active %}
+<p>Table is active</p>
 {% endif %}
 
 <hr>

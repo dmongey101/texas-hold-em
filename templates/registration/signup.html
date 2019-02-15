@@ -2,7 +2,10 @@
 {% load bootstrap_tags %}
 
 {% block content %}
-  <h2>Sign up</h2>
+  <div id="masthead" class="row">
+    <h1>Sign Up</h1>
+</div>
+
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ signupForm | as_bootstrap }}

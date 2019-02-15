@@ -2,6 +2,11 @@
 {% load bootstrap_tags %}
 
 {% block content %}
+
+<div id="masthead" class="row">
+    <h1>Create a Table</h1>
+</div>
+
     <form method="POST">
         {% csrf_token %}
         {{ form | as_bootstrap }}

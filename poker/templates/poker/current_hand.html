@@ -18,9 +18,9 @@
         <div class="col-1">
             {% for player in players %}
             {% if player.user == request.user %}
-            <form method="POST" action="{% url 'leave_table' table.id player.id %}">
+            <form class="margin-top" method="POST" action="{% url 'leave_table' table.id player.id %}">
                 {% csrf_token %}
-                <input type="submit" class="btn btn-danger" value="Leave Table"/>
+                 <button type="submit" class="btn btn-danger">Leave</button>
             </form>
             {% endif %}
             {% endfor %}
@@ -39,7 +39,7 @@
 
 <div class="row">
     <div class="col center">
-{% if hand.check_no >= no_of_preflop_players  %}
+{% if hand.check_no >= number_of_players  %}
     <img src="/static/images/{{ hand.card_1 }}.png" class="cards">
     <img src="/static/images/{{ hand.card_2 }}.png" class="cards">
     <img src="/static/images/{{ hand.card_3 }}.png" class="cards">
@@ -109,48 +109,44 @@
     {% if hand != None and player.user == request.user and player.is_active and player.seat_num == hand.current_player and hand.check_no < no_of_river_players %}
     <div class="row">
         <div class="col-6 center">
-            
-    <form method="POST" action="{% url 'fold' hand.id player.id %}">
-        {% csrf_token %}
-        <input class="btn btn-danger margin-top" type="submit" value="Fold"/>
-    </form>
+            <form method="POST" action="{% url 'fold' hand.id player.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger margin-top">Fold</button>
+            </form>
         </div>
         <div class="col-6 center">
     {% if hand.current_bet == 0 %} 
-    <form method="POST" action="{% url 'check' table.id hand.id player.id %}">
-        {% csrf_token %}
-        <input class="btn btn-warning margin-top" type="submit" value="Check"/>
-    </form>
+            <form method="POST" action="{% url 'check' table.id hand.id player.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-warning margin-top">Check</button>
+            </form>
         </div>
     </div>
     {% else %}
-    <form method="POST" action="{% url 'call' table.id hand.id player.id %}">
-        {% csrf_token %}
-        <input class="btn btn-warning margin-top" type="submit" value="Call"/>
-    </form>
+            <form method="POST" action="{% url 'call' table.id hand.id player.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-warning margin-top">Call</button>
+            </form>
         </div>
     </div>
     {% endif %}
-    
     <br>
-    
     <div class="row">
         <div class="col-12 center">
     {% if hand.current_bet == 0 %}
-    <form method="POST" action="{% url 'bet' table.id hand.id player.id %}">
-        {% csrf_token %}
-        <input class="btn btn-info" type="submit" value="Bet"/>
-        <input class="input" type="number" step="{{ table.blinds }}" name="bet"/>
-    </form>
+            <form method="POST" action="{% url 'bet' table.id hand.id player.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-info">Bet</button>
+                <input class="input" type="number" step="5" name="bet"/>
+            </form>
         </div>
     </div>
     {% else %}
-    <form method="POST" action="{% url 'raise' table.id hand.id player.id %}">
-        {% csrf_token %}
-        <input class="btn btn-info" type="submit" value="Raise"/>
-        <input class="input" type="number" step="{{ table.blinds }}" name="raise"/>
-    </form>
-    <br>
+            <form method="POST" action="{% url 'raise' table.id hand.id player.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-info">Raise</button>
+                <input class="input" type="number" step="{{ table.blinds }}" name="raise"/>
+            </form>
        </div>
     </div>
     {% endif %}
