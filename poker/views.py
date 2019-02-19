@@ -14,11 +14,6 @@ def show_index(request):
     return render(request, "poker/index.html")
 
 
-def error_404_view(request, exception):
-    data = {"name": "ThePythonDjango.com"}
-    return render(request, 'poker/404.html', data)
-
-
 # ----- Create table form ------
 @login_required
 def create_table(request):
@@ -26,7 +21,8 @@ def create_table(request):
         form = CreateTableForm(request.POST)
         table = form.save(commit=False)
         table.owner = request.user
-        table.save()
+        if form.is_valid():
+            table.save()
         return redirect('view_table', table.id)
     else:
         form = CreateTableForm()
@@ -298,7 +294,7 @@ def bet(request, table_id, hand_id, player_id):
     players = Player.objects.filter(table_id=table_id)
     hand = get_object_or_404(Hand, id=hand_id)
     player = get_object_or_404(Player, id=player_id)
-    amount = request.POST['bet']
+    amount = request.POST.get('bet', 0)
     # When a player doesn't have enough chips
     if int(amount) > player.chips:
         return HttpResponse('Not enough chips')
@@ -345,7 +341,7 @@ def raise_bet(request, table_id, hand_id, player_id):
     players = Player.objects.filter(table_id=table_id)
     hand = get_object_or_404(Hand, id=hand_id)
     player = get_object_or_404(Player, id=player_id)
-    amount = request.POST['raise']
+    amount = request.POST.get('raise', 0)
 
     # When a player doesn't have enough chips
     if int(amount) > player.chips:

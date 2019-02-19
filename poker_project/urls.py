@@ -20,7 +20,6 @@ from poker.views import show_index
 from accounts.views import signup
 from donations.views import donations
 from poker import urls as poker_urls
-from django.conf.urls import handler404
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,4 +31,3 @@ urlpatterns = [
     path('media/<path:path>', serve, {'document_root': settings.MEDIA_ROOT}),
 ]
 
-handler404 = 'poker.views.error_404_view'
