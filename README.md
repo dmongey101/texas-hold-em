@@ -173,6 +173,7 @@ Manual testing was done to ensure:
 ## Deployment
 
 The site is hosted on heroku.
+
 Static assets are hosted on Amazon S3.
 
 ### Run Locally

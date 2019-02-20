@@ -30,6 +30,7 @@ def create_table(request):
 
 
 # ------- List of all live tables --------
+@login_required
 def find_table(request):
     tables = Table.objects.all()
     no_of_tables = len(tables)

@@ -32,12 +32,16 @@ class TestViews(TestCase):
 
 
     def test_get_find_table_page(self):
+        User.objects.create_user(username='test', email='test@example.com', password='Madetotest')
+        self.client.login(username='test', password='Madetotest')
         page = self.client.get("/poker/find_table", follow=True)
         self.assertEqual(page.status_code, 200)
         self.assertTemplateUsed(page, "poker/find_table.html")
 
 
     def test_get_view_table_page(self):
+        User.objects.create_user(username='test', email='test@example.com', password='Madetotest')
+        self.client.login(username='test', password='Madetotest')
         table = Table(name="Table 1")
         table.save()
         page = self.client.get("/poker/view_table/{0}".format(table.id))
@@ -56,6 +60,8 @@ class TestViews(TestCase):
 
 
     def test_table_is_deleted_when_game_is_over(self):
+        User.objects.create_user(username='test', email='test@example.com', password='Madetotest')
+        self.client.login(username='test', password='Madetotest')
         table = Table(name='Table 1')
         table.is_active = True
         table.save()
