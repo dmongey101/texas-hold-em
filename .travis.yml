@@ -2,5 +2,4 @@ language: python
 python:
 - "3.4"
 install: "pip install -r requirements.txt"
-script:
-- ./manage.py test
+script: - DJANGO_SETTINGS_MODULE="fourth-stream_project.settings.dev" ./manage.py test
