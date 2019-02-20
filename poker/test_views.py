@@ -55,31 +55,6 @@ class TestViews(TestCase):
         target_status_code=200, fetch_redirect_response=True)
 
 
-    # def test_redirect_player_to_current_hand_when_all_players_have_joined(self):
-    #     User.objects.create_user(username='test', email='test@example.com', password='Madetotest')
-    #     self.client.login(username='test', password='Madetotest')
-    #     player = Player()
-    #     player.save()
-    #     table = Table(name='Table 1')
-    #     table.is_active = True
-    #     table.save()
-    #     response = self.client.get("/poker/view_table/{0}".format(table.id), follow=True)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertRedirects(response, '/poker/table/current_hand/{0}'.format(table.id))
-    
-    
-    # def test_redirect_to_deal_cards_when_all_players_join_a_table(self):
-    #     table = Table(name='Table 1')
-    #     table.save()
-    #     User.objects.create_user(username='test', email='test@example.com', password='Madetotest')
-    #     self.client.login(username='test', password='Madetotest')
-    #     player = Player()
-    #     player.save()
-    #     response = self.client.post("/poker/table/join/{0}".format(table.id))
-    #     self.assertRedirects(response, 'table/hand/deal/{0}'.format(table.id), status_code=302, 
-    #     target_status_code=200, fetch_redirect_response=True)
-
-
     def test_table_is_deleted_when_game_is_over(self):
         table = Table(name='Table 1')
         table.is_active = True
@@ -194,17 +169,4 @@ class TestViews(TestCase):
         response = self.client.post("/poker/game/hand/check/{0}/{1}/{2}".format(table.id, hand.id, player.id))
         self.assertRedirects(response, "/poker/table/current_hand/{0}".format(table.id), status_code=302, 
         target_status_code=200, fetch_redirect_response=True)
-
         
-    
-        
-        
-    
-        
-        
-        
-        
-        
-
-    
-    

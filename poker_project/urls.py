@@ -24,7 +24,7 @@ from poker import urls as poker_urls
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('signup/', signup, name='signup'),
+    path('accounts/signup/', signup, name='signup'),
     path('poker/', include(poker_urls)),
     path('', show_index, name='index'),
     path('donations/pay/', donations, name='pay'),

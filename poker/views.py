@@ -41,7 +41,6 @@ def find_table(request):
 def view_table(request, id):
     table = get_object_or_404(Table, pk=id)
     players = Player.objects.filter(table=table)
-    hand = Hand.objects.last()
 
     player_list = []
     for player in players:
@@ -57,7 +56,7 @@ def view_table(request, id):
         return redirect(get_current_hand, id)
 
     context = {"table": table, "players": players,
-               "hand": hand, "player_list": player_list}
+               "player_list": player_list}
 
     return render(request, "poker/view_table.html", context)
 
@@ -183,7 +182,7 @@ def join_table(request, id):
         for index, player in enumerate(players):
             player.seat_num = index
             player.save()
-        return deal_cards(request, id)
+        return redirect('deal', id)
     return redirect('view_table', id)
 
 
@@ -207,13 +206,13 @@ def deal_cards(request, id):
     table.dealer += 1 # Default dealer is set to -1, first dealer will be 0
 
     # Ensures there will be no wrong dealer, big/small blind
-    if table.dealer > number_of_players:
+    if table.dealer >= number_of_players:
         table.dealer = 0
     table.big_blind += 1
-    if table.big_blind > number_of_players:
+    if table.big_blind >= number_of_players:
         table.big_blind = 0
     table.small_blind += 1
-    if table.small_blind > number_of_players:
+    if table.small_blind >= number_of_players:
         table.small_blind = 0
     table.save()
 

@@ -10,8 +10,10 @@
     <title>Document</title>
 </head>
 <body>
-
-
+    
+{% block head_js %}
+<script type="text/javascript" src="{% static 'js/sounds.js' %}"></script>
+{% endblock %}
 
 <div class="container">
     <div class="row">
@@ -118,14 +120,14 @@
     {% if hand.current_bet == 0 %} 
             <form method="POST" action="{% url 'check' table.id hand.id player.id %}">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-warning margin-top">Check</button>
+                <button type="submit" id="check" class="btn btn-warning margin-top">Check</button>
             </form>
         </div>
     </div>
     {% else %}
             <form method="POST" action="{% url 'call' table.id hand.id player.id %}">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-warning margin-top">Call</button>
+                <button type="submit" id="chips" class="btn btn-warning margin-top">Call</button>
             </form>
         </div>
     </div>
@@ -136,7 +138,7 @@
     {% if hand.current_bet == 0 %}
             <form method="POST" action="{% url 'bet' table.id hand.id player.id %}">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-info">Bet</button>
+                <button type="submit" id="chips" class="btn btn-info">Bet</button>
                 <input class="input" type="number" step="5" name="bet"/>
             </form>
         </div>
@@ -144,7 +146,7 @@
     {% else %}
             <form method="POST" action="{% url 'raise' table.id hand.id player.id %}">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-info">Raise</button>
+                <button type="submit" id="chips" class="btn btn-info">Raise</button>
                 <input class="input" type="number" step="{{ table.blinds }}" name="raise"/>
             </form>
        </div>
@@ -181,7 +183,7 @@
             {% if player.user == request.user and player.seat_num == table.dealer %}
             <form method="POST" action="{% url 'deal' table.id %}">
                 {% csrf_token %}
-                <input type="submit" class="btn btn-info" value="Deal"/>
+                <input type="submit" id="deal" class="btn btn-info" value="Deal"/>
             </form>
             {% endif %}
             {% endif %}
@@ -191,3 +193,9 @@
 </div>
 </div>
 
+
+    <script type="text/javascript" src="{% static 'js/sounds.js' %}"></script>
+
+
+</body>
+</html>
