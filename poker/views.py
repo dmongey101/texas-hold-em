@@ -38,6 +38,7 @@ def find_table(request):
 
 
 #----- Shows details of the table and players in the table --------
+@login_required
 def view_table(request, id):
     table = get_object_or_404(Table, pk=id)
     players = Player.objects.filter(table=table)
