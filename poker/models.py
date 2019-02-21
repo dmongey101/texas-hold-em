@@ -9,6 +9,7 @@ class Table(models.Model):
     name = models.CharField(max_length=50)
     no_of_players = models.IntegerField(default=2, validators=[MinValueValidator(2), MaxValueValidator(8)])
     blinds = models.IntegerField(default=10)
+    password = models.CharField(max_length=50, default='password')
     is_active = models.BooleanField(default=False)
     dealer = models.IntegerField(default=-1)
     big_blind = models.IntegerField(default=1)

@@ -1,5 +1,4 @@
 # Texas Holdem
----
 
 Fullstack Frameworks with Django Project - Code Institute
 
@@ -8,7 +7,6 @@ It requires a new user to register and then create or join a table.
 The purpose of the game is not to replicate the normal online poker websites, but rather be a place where friends can get together and play poker no matter where they are in the world.
 
 ## How it Works
----
 
 1) Registers or login. 
 2) Organise a few friends who will play with you. (2-8 players)

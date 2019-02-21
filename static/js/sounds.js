@@ -18,14 +18,14 @@ window.addEventListener('load', playFx);
 
 window.onload = function(){
     document.getElementById("chips").onclick = function(){
-        chips.play()
-    }
+        chips.play();
+    };
     
     document.getElementById("deal").onclick = function(){
-        deal.play()
-    }
+        deal.play();
+    };
         
     document.getElementById("check").onclick = function(){
-        check.play()
-    }
-}
+        check.play();
+    };
+};

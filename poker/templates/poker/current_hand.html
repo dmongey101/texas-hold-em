@@ -20,18 +20,30 @@
         <div class="col-1">
             {% for player in players %}
             {% if player.user == request.user %}
-            <form class="margin-top" method="POST" action="{% url 'leave_table' table.id player.id %}">
+            <form class="margin-top" method="POST" action="{% url 'leave_table' table.id hand.id player.id %}">
                 {% csrf_token %}
                  <button type="submit" class="btn btn-danger">Leave</button>
             </form>
             {% endif %}
             {% endfor %}
         </div>
-        <div class="col-11 center">
+        <div class="col-10 center">
             <h3>{{ table.name }}</h3>
         </div>
+    
+    {% for player in players %}
+        {% if hand == None or hand.check_no == no_of_river_players %}
+        {% if player.user == request.user and player.seat_num == dealer %}
+        <div class="col-1">
+            <form class="margin-top" method="POST" action="{% url 'deal' table.id %}">
+                {% csrf_token %}
+                <button type="submit" id="deal" class="btn btn-info">Deal</button>
+            </form>
+        </div>
+        {% endif %}
+        {% endif %}
+    {% endfor %}
     </div>
-
 <div class="row">
     <div class="col center">
 <h3>Pot: <i>{{ hand.pot }}</i></h3>
@@ -139,7 +151,7 @@
             <form method="POST" action="{% url 'bet' table.id hand.id player.id %}">
                 {% csrf_token %}
                 <button type="submit" id="chips" class="btn btn-info">Bet</button>
-                <input class="input" type="number" step="5" name="bet"/>
+                <input class="input" type="number" step="5" name="bet" required/>
             </form>
         </div>
     </div>
@@ -147,7 +159,7 @@
             <form method="POST" action="{% url 'raise' table.id hand.id player.id %}">
                 {% csrf_token %}
                 <button type="submit" id="chips" class="btn btn-info">Raise</button>
-                <input class="input" type="number" step="{{ table.blinds }}" name="raise"/>
+                <input class="input" type="number" step="5" name="raise" required/>
             </form>
        </div>
     </div>
@@ -172,30 +184,10 @@
     {% endif %}
     <br>
     </div>
-    
-    
 {% endfor %}
 
-{% for player in players %}
-    <div class="row">
-        <div class="col">
-            {% if hand == None or hand.check_no == no_of_river_players %}
-            {% if player.user == request.user and player.seat_num == table.dealer %}
-            <form method="POST" action="{% url 'deal' table.id %}">
-                {% csrf_token %}
-                <input type="submit" id="deal" class="btn btn-info" value="Deal"/>
-            </form>
-            {% endif %}
-            {% endif %}
-        </div>
-    </div>  
-{% endfor %}
+    </div>
 </div>
-</div>
-
-
     <script type="text/javascript" src="{% static 'js/sounds.js' %}"></script>
-
-
 </body>
 </html>
