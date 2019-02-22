@@ -143,7 +143,7 @@ hand.pot += (player.player_pot - old_player_pot)
 
 ![alt text](https://travis-ci.org/dmongey101/texas-hold-em.svg?branch=master)
 
-Automated testing was done using Travis-CI. Currently it holds an 85% coverage across the site's three apps. 26 tests were written to achieve this.
+Automated testing was done using Travis-CI. Currently it holds an 86% coverage across the site's three apps. 26 tests were written to achieve this.
 
 To run the tests, when you have the project running locally, enter:
 

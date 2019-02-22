@@ -58,7 +58,7 @@ def view_table(request, id):
         return redirect(get_current_hand, id)
 
     context = {"table": table, "players": players,
-               "player_list": player_list}
+              "player_list": player_list}
 
     return render(request, "poker/view_table.html", context)
 
@@ -96,16 +96,15 @@ def get_current_hand(request, id):
     # are put into a list to determine a winner
     for player in players:
         if (hand.check_no == no_of_river_players and
-           player.is_active):
+          player.is_active):
             players_hands.append([Card.from_str(player.card_1),
                                   Card.from_str(player.card_2)])
             active_players.append(player)
-
+    # Dealing with the end of the hand
     if hand.check_no == no_of_river_players:
         results = poker.determine_score(community_cards, players_hands)
         determine_winner = poker.determine_winner(results)
 
-    if hand.check_no == no_of_river_players:
         # If there is only one winner
         if determine_winner in range(len(active_players)):
             winner = active_players[determine_winner]
@@ -134,9 +133,9 @@ def get_current_hand(request, id):
         hand.pot = 0
     # Reset of values after each round of betting
     if (hand.check_no == number_of_players or
-       hand.check_no == no_of_flop_players or
-       hand.check_no == no_of_turn_players or
-       hand.check_no == no_of_river_players):
+      hand.check_no == no_of_flop_players or
+      hand.check_no == no_of_turn_players or
+      hand.check_no == no_of_river_players):
 
         hand.current_bet = 0
         hand.raise_amount = 0
@@ -167,17 +166,23 @@ def get_current_hand(request, id):
 
     if hand.current_player not in player_seats:
         hand.current_player += 1
+    if table.dealer not in player_seats:
         table.dealer += 1
         table.small_blind += 1
         table.big_blind += 1
-        if table.dealer >= number_of_players:
-            table.dealer = 0
-        if table.big_blind >= number_of_players:
-            table.big_blind = 0
-        if table.small_blind >= number_of_players:
-            table.small_blind = 0
-        hand.save()
-        table.save()
+    if table.small_blind not in player_seats:
+        table.small_blind += 1
+        table.big_blind += 1
+    if table.big_blind not in player_seats:
+        table.big_blind += 1
+    if table.dealer >= number_of_players:
+        table.dealer = 0
+    if table.big_blind >= number_of_players:
+        table.big_blind = 0
+    if table.small_blind >= number_of_players:
+        table.small_blind = 0
+    hand.save()
+    table.save()
     # Deal button will appear on the screen of the
     # players who's turn it is to deal
     dealer = table.dealer + 1
@@ -185,12 +190,12 @@ def get_current_hand(request, id):
         dealer = 0
 
     context = {"table": table, "players": players, "hand": hand,
-               "number_of_players": number_of_players,
-               "no_of_flop_players": no_of_flop_players,
-               "no_of_turn_players": no_of_turn_players,
-               "no_of_river_players": no_of_river_players,
-               "dealer": dealer
-               }
+              "number_of_players": number_of_players,
+              "no_of_flop_players": no_of_flop_players,
+              "no_of_turn_players": no_of_turn_players,
+              "no_of_river_players": no_of_river_players,
+              "dealer": dealer
+              }
     return render(request, "poker/current_hand.html", context)
 
 
@@ -266,7 +271,6 @@ def deal_cards(request, id):
 
     hand.current_bet = table.blinds
     hand.current_player = table.big_blind + 1
-    hand.save()
 
     # Distributes two cards to every player
     for i in range(2):
@@ -295,7 +299,7 @@ def deal_cards(request, id):
     poker.burnOne()
     card5 = poker.getOne()
     hand.card_5 = card5[0]
-
+    
     # Ensures big blind has option to raise in pre-flop betting
     hand.check_no = 0
     hand.save()
@@ -342,17 +346,17 @@ def bet(request, table_id, hand_id, player_id):
         hand.check_no = 1
 
     if (hand.check_no >= len(players) and
-       hand.check_no < (len(players) * 2)):
+      hand.check_no < (len(players) * 2)):
 
         hand.check_no = len(players) + 1
 
     if (hand.check_no >= (len(players) * 2) and
-       hand.check_no < (len(players) * 3)):
+      hand.check_no < (len(players) * 3)):
 
         hand.check_no = (len(players) * 2) + 1
 
     if (hand.check_no >= (len(players) * 3) and
-       hand.check_no < (len(players) * 4)):
+      hand.check_no < (len(players) * 4)):
 
         hand.check_no = (len(players) * 3) + 1
 
@@ -397,17 +401,17 @@ def raise_bet(request, table_id, hand_id, player_id):
         hand.check_no = 1
 
     if (hand.check_no >= len(players) and
-       hand.check_no < (len(players) * 2)):
+      hand.check_no < (len(players) * 2)):
 
         hand.check_no = len(players) + 1
 
     if (hand.check_no >= (len(players) * 2) and
-       hand.check_no < (len(players) * 3)):
+      hand.check_no < (len(players) * 3)):
 
         hand.check_no = (len(players) * 2) + 1
 
     if (hand.check_no >= (len(players) * 3) and
-       hand.check_no < (len(players) * 4)):
+      hand.check_no < (len(players) * 4)):
 
         hand.check_no = (len(players) * 3) + 1
 
@@ -446,9 +450,9 @@ def call_bet(request, table_id, hand_id, player_id):
 
     # If the player is the last player to bet then reset the betting
     if (hand.check_no == len(players) or
-       hand.check_no == len(players) * 2 or
-       hand.check_no == len(players) * 3 or
-       hand.check_no == len(players) * 4):
+      hand.check_no == len(players) * 2 or
+      hand.check_no == len(players) * 3 or
+      hand.check_no == len(players) * 4):
 
         hand.current_bet = 0
         hand.raise_amount = 0

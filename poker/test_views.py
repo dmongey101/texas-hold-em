@@ -100,16 +100,24 @@ class TestViews(TestCase):
         self.client.login(username='test', password='Madetotest')
         table = Table(name='Table 1')
         table.save()
+        hand = Hand(table=table)
+        hand.save()
         player = Player()
         player.save()
-        response = self.client.post("/poker/table/leave/{0}/{1}".format(table.id, player.id))
+        response = self.client.post("/poker/table/leave/{0}/{1}/{2}".format(table.id, hand.id, player.id))
         self.assertRedirects(response, '/poker/find_table/', status_code=302, 
         target_status_code=200, fetch_redirect_response=True)
 
 
     def test_redirect_to_current_hand_after_dealing(self):
+        User.objects.create_user(username='test', email='test@example.com', password='Madetotest')
+        self.client.login(username='test', password='Madetotest')
+        player = Player()
+        player.save()
         table = Table(name='Table 1')
         table.save()
+        hand = Hand(table=table)
+        hand.save()
         response = self.client.post("/poker/table/hand/deal/{0}".format(table.id))
         self.assertRedirects(response, "/poker/table/current_hand/{0}".format(table.id), status_code=302, 
         target_status_code=200, fetch_redirect_response=True)
