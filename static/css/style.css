@@ -1,17 +1,29 @@
-.navbar {
-    padding: 1.5rem;
+nav .nav-wrapper {
+    height: 95px;
+    position: relative;
+    background-color: #222C37;
 }
 
-.navbar-brand {
-    font-size: 2rem;
+nav .brand-logo {
+    height: 95px;
+    width: 300px;
+    background-color: #AD002B;
+    text-decoration: none;
+    line-height: 90px;
+    
 }
 
-.nav-link {
-    font-size: 1.5rem;
+nav ul li a {
+    font-size: 1.25rem;
+    text-decoration: none;
+    height: 95px;
+    line-height: 85px;
 }
 
-.navbar-toggler {
-    font-size: 1.5rem;
+nav ul li a:hover {
+    color: white;
+    text-decoration: none;
+    background-color: #AD002B;
 }
 
 #masthead {
@@ -24,3 +36,6 @@
     line-height: 1;
     margin-top: 50px;
 }
+
+
+

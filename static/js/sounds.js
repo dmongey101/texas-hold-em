@@ -16,16 +16,15 @@ function playFx() {
 
 window.addEventListener('load', playFx);
 
-window.onload = function(){
-    document.getElementById("chips").onclick = function(){
-        chips.play();
-    };
-    
-    document.getElementById("deal").onclick = function(){
-        deal.play();
-    };
-        
-    document.getElementById("check").onclick = function(){
-        check.play();
-    };
-};
+$(document).on('click','#chips',function() {
+    chips.play();
+}); 
+
+$(document).on('click','#deal',function() {
+    deal.play();
+}); 
+
+$(document).on('click','#check',function() {
+    check.play();
+}); 
+
