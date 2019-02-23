@@ -2,6 +2,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Texas Hold'em</title>
     
     {% block head_styles %}
@@ -9,46 +12,50 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css?family=Laila" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Dosis|Kanit" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% endblock head_styles %}
+    
+     {% block head_js %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    {% endblock head_js %}
 
 </head>
 <body>
-  <header>
+<header>
   <nav>
-        <div class="nav-wrapper">
-          <a class="brand-logo logo" href="{% url 'index' %}"><img class="margin-right" src="/static/images/logo.png">Texas Hold'em</a>
-          <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-          <ul id="nav-mobile" class="right hide-on-med-and-down">
-            <ul id="nav-mobile" class="right hide-on-med-and-down">
-            {% if user.is_authenticated %}
-            <li><a href="{% url 'pay' %}">Donate</a></li>
-            <li><a href="{% url 'create_table' %}">Create Table</a></li>
-            <li><a href="{% url 'find_table' %}">Find Table</a></li>
-            <li><a href="{% url 'logout' %}">Sign Out<i class="fas fa-sign-out-alt"></i></a></li>
+    <div class="nav-wrapper">
+      <a class="brand-logo logo" href="{% url 'index' %}"><img class="margin-right" src="/static/images/logo.png">Texas Hold'em</a>
+      <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="fas fa-bars"></i></a>
+        <ul id="nav-mobile" class="hide-on-med-and-down">
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'pay' %}">DONATE</a></li>
+          <li><a href="{% url 'create_table' %}">CREATE TABLE</a></li>
+          <li><a href="{% url 'find_table' %}">FIND TABLE</a></li>
+          <li class="registration"><a href="{% url 'logout' %}">SIGN OUT<i class="fas fa-sign-out-alt"></i></a></li>
           {% else %}
-            <li><a href="{% url 'signup' %}">Sign Up<i class="fas fa-user-plus"></i></a></li>
-            <li><a href="{% url 'login' %}">Sign In<i class="fas fa-sign-in-alt"></i></a></li>
+          <li class="registration"><a href="{% url 'signup' %}">SIGN UP<i class="fas fa-user-plus"></i></a></li>
+          <li class="registration"><a href="{% url 'login' %}">SIGN IN<i class="fas fa-sign-in-alt"></i></a></li>
           {% endif %}
-          </ul>
-        </div>
-    </nav>
-    <ul class="sidenav" id="mobile-demo">
-        <li><a href="{% url 'index' %}">Home</a></li>
-      <hr>
-      {% if user.is_authenticated %}
-      <li><a href="{% url 'pay' %}">Donate</a></li>
-      <li><a href="{% url 'create_table' %}">Create Table</a></li>
-      <li><a href="{% url 'find_table' %}">Find Table</a></li>
-      <li><a href="{% url 'logout' %}">Sign Out<i class="fas fa-sign-out-alt"></i></a></li>
-      {% else %}
-      <li><a href="{% url 'signup' %}">Sign Up<i class="fas fa-user-plus"></i></a></li>
-      <li><a href="{% url 'login' %}">Sign In<i class="fas fa-sign-in-alt"></i></a></li>
-      {% endif %}
-    </ul>
-
-    </header>
+      </ul>
+    </div>
+  </nav>
+  <ul class="sidenav" id="mobile-demo">
+    <li><a href="{% url 'index' %}">Home</a></li>
+    <hr>
+    {% if user.is_authenticated %}
+    <li><a href="{% url 'pay' %}">Donate</a></li>
+    <li><a href="{% url 'create_table' %}">Create Table</a></li>
+    <li><a href="{% url 'find_table' %}">Find Table</a></li>
+    <li><a href="{% url 'logout' %}">Sign Out<i class="fas fa-sign-out-alt"></i></a></li>
+    {% else %}
+    <li><a href="{% url 'signup' %}">Sign Up<i class="fas fa-user-plus"></i></a></li>
+    <li><a href="{% url 'login' %}">Sign In<i class="fas fa-sign-in-alt"></i></a></li>
+    {% endif %}
+  </ul>
+</header>
 
     <div class="container">
       {% block content %}
@@ -56,13 +63,10 @@
                     
     </div>
 <footer>
-  <div class="footer-copyright text-center py-3">© Made by Donal Mongey
-  </div>
+  <div class="footer-copyright text-center py-3">© Made by Donal Mongey</div>
 </footer>
     {% block bottom_scripts %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
     {% endblock %}
     
     

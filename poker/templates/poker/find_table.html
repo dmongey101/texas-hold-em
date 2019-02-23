@@ -5,10 +5,11 @@
 <div id="masthead" class="row">
     <h1>Find a Table</h1>
 </div>
-
+<hr>
 
 {% if no_of_tables == 0 %}
 <h3>There are currently no Tables</h3>
+<h5>Why not grab a few friends and create your own Table!!</h5>
 {% endif %}
 
 {% for table in tables %}
@@ -17,10 +18,12 @@
  - Full
 {% endif %}
 </h5>
+<p>Table Owner: {{ table.owner }}</p>
+<p>Blinds: {{ table.blinds }}</p>
 
 <form method="POST" action="{% url 'view_table' table.id %}">
     {% csrf_token %}
-    <button type="submit" class="btn-sm btn-primary">View Table</button>
+    <button type="submit" class="btn-sm btn-danger">View Table</button>
 </form>
 
 <hr>

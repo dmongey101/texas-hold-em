@@ -12,7 +12,7 @@
 {% if user not in player_list and not table.is_active %}
 <form method="POST" action="{% url 'join_table' table.id %}">
     {% csrf_token %}
-    <button type="submit" class="btn btn-primary">Join Table</button>
+    <button class="btn-danger">Join Table</button>
 </form>
 {% endif %}
 {% endif %}

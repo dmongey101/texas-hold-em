@@ -1,30 +1,63 @@
+nav {
+    height: 95px;
+}
+
 nav .nav-wrapper {
     height: 95px;
     position: relative;
     background-color: #222C37;
 }
-
+@media only screen and (max-width: 992px) {
+    nav .nav-wrapper {
+        background-color: #AD002B;
+    }
+}
 nav .brand-logo {
     height: 95px;
     width: 300px;
+    font-family: 'Kanit', sans-serif;
     background-color: #AD002B;
     text-decoration: none;
-    line-height: 90px;
+    line-height: 95px;
     
 }
 
+nav ul {
+    margin-left: 35%;
+}
+
 nav ul li a {
-    font-size: 1.25rem;
-    text-decoration: none;
+    font-family: 'Dosis', sans-serif;
     height: 95px;
-    line-height: 85px;
+    line-height: 95px;
+    padding: 0px 30px 0px 30px;
 }
 
 nav ul li a:hover {
     color: white;
-    text-decoration: none;
     background-color: #AD002B;
 }
+
+@media only screen and (min-width: 601px) {
+    nav .nav-wrapper i, nav a.sidenav-trigger i {
+        line-height: 90px;
+    }
+}
+
+nav .sidenav-trigger {
+    line-height: 106px;
+    float: right;
+}
+
+a:hover {
+    text-decoration: none;
+    color: white;
+}
+
+.registration {
+    float: right;
+}
+
 
 #masthead {
     padding-left:10px;
@@ -37,5 +70,27 @@ nav ul li a:hover {
     margin-top: 50px;
 }
 
+button {
+    background-color: #AD002B;
+}
 
+.btn-danger {
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    background-color: #AD002B;
+    padding: .4rem .7rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: .2rem;
+    
+}
 
+.btn-danger:hover {
+    background-color: #AD002B;
+    opacity: 0.8;
+}
+
+h3 {
+    margin-bottom: 10%;
+}

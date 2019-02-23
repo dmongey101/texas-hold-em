@@ -19,6 +19,55 @@ It was built in Python3 using the Django framework.
 
 ## A live version can be found [Here](https://com-dm-texas-holdem.herokuapp.com/)
 
+## Testing the Features 
+
+To test the features of the app: 
+1. Open two browsers (or one regular and one Incognito Chrome window).
+2. Visit https://com-dm-texas-holdem.herokuapp.com/ on both browsers and sign up with two seperate accounts, or, two users have been created for testing so feel free to use them.
+* Account 1
+- **username**: Harry
+- **password**: p@ssword123
+* Account 2
+- **username**: Simon
+- **password**: p@ssword123
+3. As this game doesn't respond to live events, please **refresh the page** when changing from one browser to the other, to deal with the games progression. 
+4. When logged in, use Harry to create a table. Fill out the form ensuring number of players = 2 and blinds = 10.
+5. Let Harry join that table and then switch to Simon. As Simon, find the table created by Harry and join it.
+6. As Harry joined the table first, he is first dealer. Simon is small blind. As there are only two players, big blind goes back to Harry. 
+7. Let simon call as his first turn. By calling he is matching the big blind. 
+8. On Harrys account (remember to refresh), as he is big blind, and it is pre flop, he will have the oppurtunity to raise or check. Let Harry check.
+9. The Flop cards should appear on both screens. Small blind always starts the betting so switch over to Simon
+
+Testing Checking:
+10. Let Simon Check. Betting should move to Harry where he can bet, check or fold.
+11. Let Harry Check. This will end Flop betting and the Turn card will show.
+
+Testing Betting:
+11. Let Simon Bet 10. The pot should increase by 10 and Simons chips decrease by 10. 
+
+Testing Calling:
+12. Let Harry Call. The pot should increase by 10 and Harrys chips decrease by 10. This will end Turn betting and the River card will show.
+
+Testing Raising:
+13. Let Simon Bet 10.
+14. Let Harry Raise 10. The pot should increase by 20 and Harrys chips decrease by 20.
+
+Testing Winner:
+15. Let Simon Call. This will end the hand.
+16. A winner will have been determined and that player should recieve the pot.
+
+Testing Dealing:
+17. A deal button should now appear on Simons page as he is now the dealer. Press the button and a new set of cards will be dealt to all players.
+18. The blinds will also be taken from the appropriate players chip stack. 
+
+Testing Folding:
+19. Let Harry Raise 10.
+20. Let Simon Fold.
+21. As there are only two players, Harry wins the hand. When there are more than 2 players the betting would continue to the next player, and the player that folded will be skipped until the next hand.
+
+
+
+
 ## UX
 
 The site has a very basic layout, making it easy for a user to interact and navigate around.

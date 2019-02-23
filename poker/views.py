@@ -189,12 +189,14 @@ def get_current_hand(request, id):
     if dealer >= number_of_players:
         dealer = 0
 
+    big_blind_check = number_of_players - 1
+
     context = {"table": table, "players": players, "hand": hand,
               "number_of_players": number_of_players,
               "no_of_flop_players": no_of_flop_players,
               "no_of_turn_players": no_of_turn_players,
               "no_of_river_players": no_of_river_players,
-              "dealer": dealer
+              "dealer": dealer, "big_blind_check": big_blind_check
               }
     return render(request, "poker/current_hand.html", context)
 

@@ -10,6 +10,6 @@
     <form method="POST">
         {% csrf_token %}
         {{ form | as_bootstrap }}
-        <button type="submit" class="btn btn-primary">Create</button>
+        <button type="submit" class="btn-danger">Create</button>
     </form>
 {% endblock %}

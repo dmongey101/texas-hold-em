@@ -130,7 +130,7 @@
             </form>
         </div>
         <div class="col-6 center">
-    {% if hand.current_bet == 0 %} 
+    {% if hand.current_bet == 0 or hand.check_no == big_blind_check %} 
             <form method="POST" action="{% url 'check' table.id hand.id player.id %}">
                 {% csrf_token %}
                 <button type="submit" id="check" class="btn btn-warning margin-top">Check</button>
