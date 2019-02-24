@@ -51,11 +51,11 @@ def view_table(request, id):
     # Delete the table when game is over
     if table.is_active and len(players) == 0:
         table.delete()
-        return redirect(find_table)
+        return redirect('find_table')
 
     # Redirects to the table when all players have joined
     if len(players) == table.no_of_players:
-        return redirect(get_current_hand, id)
+        return redirect('current_hand', id)
 
     context = {"table": table, "players": players,
               "player_list": player_list}
@@ -73,6 +73,7 @@ def get_current_hand(request, id):
     no_of_turn_players = number_of_players * 3
     no_of_river_players = number_of_players * 4
     poker = Poker(number_of_players, False)
+    # Changes cards to Card objects
     card1 = Card.from_str(hand.card_1)
     card2 = Card.from_str(hand.card_2)
     card3 = Card.from_str(hand.card_3)
@@ -90,17 +91,18 @@ def get_current_hand(request, id):
     if len(unfolded_player) == 1:
         hand.check_no = no_of_river_players
 
-    active_players = []
-    active_players.reverse()
     # Players hands left at the end of a hand
     # are put into a list to determine a winner
+    active_players = []
+    active_players.reverse()
     for player in players:
         if (hand.check_no == no_of_river_players and
           player.is_active):
+            # All active players hands added to a list as objects
             players_hands.append([Card.from_str(player.card_1),
                                   Card.from_str(player.card_2)])
             active_players.append(player)
-    # Dealing with the end of the hand
+    # Determines the winner at end of hand
     if hand.check_no == no_of_river_players:
         results = poker.determine_score(community_cards, players_hands)
         determine_winner = poker.determine_winner(results)
@@ -114,7 +116,7 @@ def get_current_hand(request, id):
             for i in determine_winner:
                 winner = active_players[i]
                 hand.winner.add(winner)
-
+        # Handling the pot
         for player in players:
             if player in hand.winner.all():
                 # Splits the pot when there are more than one winners
@@ -124,12 +126,10 @@ def get_current_hand(request, id):
                 # Player recieves the whole pot when only one winner
                 else:
                     player.chips += hand.pot
-
             # Deletes a player when they're out of chips
             if player.chips == 0:
-                p = Player.objects.get(id=player.id)
-                p.delete()
-                return redirect(find_table)
+                Player.objects.get(id=player.id).delete()
+                return redirect('current_hand', id)
         hand.pot = 0
     # Reset of values after each round of betting
     if (hand.check_no == number_of_players or
@@ -188,8 +188,10 @@ def get_current_hand(request, id):
     dealer = table.dealer + 1
     if dealer >= number_of_players:
         dealer = 0
-
+    # Gives big blind the ability to check in pre flop betting
     big_blind_check = number_of_players - 1
+    if hand.check_no > no_of_river_players:
+        hand.check_no = no_of_river_players
 
     context = {"table": table, "players": players, "hand": hand,
               "number_of_players": number_of_players,
@@ -226,10 +228,17 @@ def leave_table(request, table_id, hand_id, player_id):
     table = Table.objects.get(id=table_id)
     players = Player.objects.filter(table=table)
     hand = Hand.objects.get(id=hand_id)
+    # Change thes check number to accomdate for the new number of players
     hand.check_no -= (hand.check_no / len(players))
     hand.save()
-    player = Player.objects.get(id=player_id).delete()
-    return redirect(find_table)
+    # Last player on the table will be redirected to view table which
+    # will automatically delete the table.
+    if len(players) == 1:
+        Player.objects.get(id=player_id).delete()
+        return redirect('view_table', table_id)
+
+    Player.objects.get(id=player_id).delete()
+    return redirect('find_table')
 
 
 # -- Deals two cards to every player and deals 5 community cards --
@@ -436,19 +445,22 @@ def call_bet(request, table_id, hand_id, player_id):
 
     # When a player doesn't have enough chips
     if hand.current_bet > player.chips:
-        return HttpResponse('Not enough chips')
-
-    if hand.raise_amount != 0:
-        hand.raise_amount = hand.current_bet - hand.raise_amount
+        hand.pot += player.chips
+        player.chips = 0
+        hand.check_no += 1
+    # If they do have enough chips
     else:
-        hand.raise_amount = 0
-
-    old_player_pot = player.player_pot
-    hand.current_bet -= hand.raise_amount
-    player.player_pot = hand.player_pot
-    player.chips -= abs(player.player_pot - old_player_pot)
-    hand.pot += abs(player.player_pot - old_player_pot)
-    hand.check_no += 1
+        if hand.raise_amount != 0:
+            hand.raise_amount = hand.current_bet - hand.raise_amount
+        else:
+            hand.raise_amount = 0
+    
+        old_player_pot = player.player_pot
+        hand.current_bet -= hand.raise_amount
+        player.player_pot = hand.player_pot
+        player.chips -= abs(player.player_pot - old_player_pot)
+        hand.pot += abs(player.player_pot - old_player_pot)
+        hand.check_no += 1
 
     # If the player is the last player to bet then reset the betting
     if (hand.check_no == len(players) or

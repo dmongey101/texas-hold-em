@@ -25,6 +25,11 @@
                 {% csrf_token %}
                  <button type="submit" class="btn btn-danger">Leave</button>
             </form>
+            {% else %}
+            <form class="margin-top" method="POST" action="{% url 'find_table' %}">
+                {% csrf_token %}
+                 <button type="submit" class="btn btn-danger">Leave</button>
+            </form>
             {% endif %}
             {% endfor %}
         </div>
@@ -34,7 +39,7 @@
     
     {% for player in players %}
         {% if hand == None or hand.check_no == no_of_river_players %}
-        {% if player.user == request.user and player.seat_num == dealer %}
+        {% if player.user == request.user and player.seat_num == dealer and number_of_players != 1 %}
         <div class="col-1">
             <form class="margin-top" method="POST" action="{% url 'deal' table.id %}">
                 {% csrf_token %}

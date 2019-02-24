@@ -6,5 +6,3 @@ class CreateTableForm(forms.ModelForm):
         model = Table
         exclude = ('is_active', 'big_blind', 'small_blind', 'dealer', 'owner', )
 
-
-        
