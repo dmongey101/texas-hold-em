@@ -78,14 +78,20 @@ To test the features of the app:
 23) Let Simon Call.
 24) Let Harry Check.
 
-** If Simon has more chips than Harry:**
+**If Simon has more chips than Harry:**
+
     25) Let Simon Bet the total amount of his chips.
+    
     26) Let Harry Call.
     
-** If Harry has more chips than Simon:**
+**If Harry has more chips than Simon:**
+
     25) Let Simon Check.
+    
     26) Let Harry Bet the total amount of his chips.
+    
     27) Let Simon Call.
+    
 28) Let Simon Check.
 29) Let Harry Check.
 30) Let Simon Check.

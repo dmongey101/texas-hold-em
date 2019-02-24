@@ -80,7 +80,7 @@ class TestViews(TestCase):
         self.assertTemplateUsed(page, "poker/current_hand.html")
 
 
-    def test_player_is_deleted_redirected_to_find_table_when_no_chips(self):
+    def test_player_is_deleted_and_redirected_to_current_hand_when_no_chips(self):
         User.objects.create_user(username='test', email='test@example.com', password='Madetotest')
         self.client.login(username='test', password='Madetotest')
         table = Table(name='Table 1')
@@ -92,7 +92,7 @@ class TestViews(TestCase):
         player.save()
         response = self.client.get('/poker/table/current_hand/{0}'.format(table.id), follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertRedirects(response, '/poker/find_table/')
+        self.assertRedirects(response, '/poker/table/current_hand/{0}'.format(table.id))
 
 
     def test_delete_player_and_redirect_to_find_table_when_they_leave(self):
@@ -105,7 +105,7 @@ class TestViews(TestCase):
         player = Player()
         player.save()
         response = self.client.post("/poker/table/leave/{0}/{1}/{2}".format(table.id, hand.id, player.id))
-        self.assertRedirects(response, '/poker/find_table/', status_code=302, 
+        self.assertRedirects(response, '/poker/view_table/{0}'.format(table.id), status_code=302, 
         target_status_code=200, fetch_redirect_response=True)
 
 
