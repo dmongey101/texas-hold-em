@@ -79,19 +79,15 @@ To test the features of the app:
 24) Let Harry Check.
 
 **If Simon has more chips than Harry:**
-
-    25) Let Simon Bet the total amount of his chips.
-    
-    26) Let Harry Call.
+25) Let Simon Bet the total amount of his chips.
+26) Let Harry Call.
     
 **If Harry has more chips than Simon:**
+25) Let Simon Check.
+26) Let Harry Bet the total amount of his chips.
+27) Let Simon Call.
 
-    25) Let Simon Check.
-    
-    26) Let Harry Bet the total amount of his chips.
-    
-    27) Let Simon Call.
-    
+
 28) Let Simon Check.
 29) Let Harry Check.
 30) Let Simon Check.
@@ -215,6 +211,34 @@ I'll run you through the steps I took to make it work.
 
 7. I then added blinds to the game which made everything a bit more difficult. I wanted the game to be as close to a real game of Texas     Hold'em as possible. So betting always starts with small blind. A player leaving the game messed up the the order of the blinds.
    Trying to deal with this proved to be very difficult and required a lot of testing for different secenarios.
+   The finished algorithim looked like this:
+   ```
+   table.dealer += 1  # First dealer will be player 0
+    table.small_blind += 1
+    table.big_blind += 1
+
+    # Moves on positions where there are empty seats
+    player_seats = []
+    for player in players:
+        player_seats.append(player.seat_num)
+
+    if table.dealer > sorted(player_seats)[-1]:
+        table.dealer = 0
+    while table.dealer not in player_seats:
+        table.dealer += 1
+
+    if table.small_blind > sorted(player_seats)[-1]:
+        table.small_blind = 0
+    while table.small_blind not in player_seats:
+        table.small_blind += 1
+
+    if table.big_blind > sorted(player_seats)[-1]:
+        table.big_blind = 0
+    while table.big_blind not in player_seats:
+        table.big_blind += 1
+
+    table.save()
+    ```
 
 Testing this app to ensure all the features worked properly was long and awkward. The number of players in a game represented the number of browsers I had open. I tried to test every secenario for two player games, all the way up to five player games.
 

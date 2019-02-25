@@ -1,10 +1,22 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div id="masthead" class="row">
-    <h1>Texas Hold'em</h1>
+<div class="row" id="masthead">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <h1>Texas Hold'em</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <p>Play Poker now. Create a table, get your friends to join and enjoy playing Texas Hold'em.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <img id="img1" class="homepage-img" src="/static/images/poker-homepage.PNG" alt="homepage image">
+        <img id="img2" class="homepage-img" src="/static/images/small-poker-homepage.PNG" alt="homepage image">
+    </div>
 </div>
-
-<p>Play Poker now. Create a table, get your friends to join and enjoy playing Texas Hold'em.</p>
-
 {% endblock %}

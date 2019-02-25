@@ -58,7 +58,7 @@ def view_table(request, id):
         return redirect('current_hand', id)
 
     context = {"table": table, "players": players,
-              "player_list": player_list}
+               "player_list": player_list}
 
     return render(request, "poker/view_table.html", context)
 
@@ -81,10 +81,12 @@ def get_current_hand(request, id):
     card5 = Card.from_str(hand.card_5)
     community_cards = [card1, card2, card3, card4, card5]
     players_hands = []
+    all_players = []
 
     # When all but one players fold, final player is determined winner
     unfolded_player = []
     for player in players:
+        all_players.append(player.user)
         if player.is_active:
             unfolded_player.append(player)
 
@@ -97,7 +99,7 @@ def get_current_hand(request, id):
     active_players.reverse()
     for player in players:
         if (hand.check_no == no_of_river_players and
-          player.is_active):
+           player.is_active):
             # All active players hands added to a list as objects
             players_hands.append([Card.from_str(player.card_1),
                                   Card.from_str(player.card_2)])
@@ -126,26 +128,14 @@ def get_current_hand(request, id):
                 # Player recieves the whole pot when only one winner
                 else:
                     player.chips += hand.pot
+
             # Deletes a player when they're out of chips
             if player.chips == 0:
                 Player.objects.get(id=player.id).delete()
+                hand.check_no -= (hand.check_no / len(players))
+                hand.save()
                 return redirect('current_hand', id)
         hand.pot = 0
-    # Reset of values after each round of betting
-    if (hand.check_no == number_of_players or
-      hand.check_no == no_of_flop_players or
-      hand.check_no == no_of_turn_players or
-      hand.check_no == no_of_river_players):
-
-        hand.current_bet = 0
-        hand.raise_amount = 0
-        hand.player_pot = 0
-        # Betting always starts with small blind
-        hand.current_player = table.small_blind
-
-        for player in players:
-            player.player_pot = 0
-            player.save()
 
     # Skipping folded players
     for player in players:
@@ -154,52 +144,56 @@ def get_current_hand(request, id):
                 hand.current_player += 1
                 if hand.check_no < no_of_river_players:
                     hand.check_no += 1
+
     # Brings betting back to first player when the end of table is reached
     if hand.current_player >= len(players):
         hand.current_player = 0
-    hand.save()
 
-    # Skipping empty seats
+    # Skipping empty seats during a game
     player_seats = []
     for player in players:
         player_seats.append(player.seat_num)
-
-    if hand.current_player not in player_seats:
-        hand.current_player += 1
-    if table.dealer not in player_seats:
-        table.dealer += 1
-        table.small_blind += 1
-        table.big_blind += 1
-    if table.small_blind not in player_seats:
-        table.small_blind += 1
-        table.big_blind += 1
-    if table.big_blind not in player_seats:
-        table.big_blind += 1
-    if table.dealer >= number_of_players:
-        table.dealer = 0
-    if table.big_blind >= number_of_players:
-        table.big_blind = 0
-    if table.small_blind >= number_of_players:
-        table.small_blind = 0
-    hand.save()
-    table.save()
-    # Deal button will appear on the screen of the
-    # players who's turn it is to deal
     dealer = table.dealer + 1
-    if dealer >= number_of_players:
+    if dealer > sorted(player_seats)[-1]:
         dealer = 0
+    while dealer not in player_seats:
+        dealer += 1
+
+    # Reset of values after each round of betting
+    if (hand.check_no == number_of_players or
+       hand.check_no == no_of_flop_players or
+       hand.check_no == no_of_turn_players or
+       hand.check_no == no_of_river_players):
+
+        hand.current_bet = 0
+        hand.raise_amount = 0
+        hand.player_pot = 0
+
+        # Betting always starts with small blind
+        hand.current_player = table.small_blind
+        if hand.current_player > sorted(player_seats)[-1]:
+            hand.current_player = 0
+        while hand.current_player not in player_seats:
+            hand.current_player += 1
+
+        for player in players:
+            player.player_pot = 0
+            player.save()
+    hand.save()
+
     # Gives big blind the ability to check in pre flop betting
     big_blind_check = number_of_players - 1
     if hand.check_no > no_of_river_players:
         hand.check_no = no_of_river_players
 
     context = {"table": table, "players": players, "hand": hand,
-              "number_of_players": number_of_players,
-              "no_of_flop_players": no_of_flop_players,
-              "no_of_turn_players": no_of_turn_players,
-              "no_of_river_players": no_of_river_players,
-              "dealer": dealer, "big_blind_check": big_blind_check
-              }
+               "number_of_players": number_of_players,
+               "no_of_flop_players": no_of_flop_players,
+               "no_of_turn_players": no_of_turn_players,
+               "no_of_river_players": no_of_river_players,
+               "dealer": dealer, "all_players": all_players,
+               "big_blind_check": big_blind_check
+               }
     return render(request, "poker/current_hand.html", context)
 
 
@@ -252,17 +246,36 @@ def deal_cards(request, id):
     hand = Hand()
     hand.table_id = table.id
     table.dealer += 1  # First dealer will be player 0
-
-    # Ensures there will be no wrong dealer, big/small blind
-    if table.dealer >= number_of_players:
-        table.dealer = 0
-    table.big_blind += 1
-    if table.big_blind >= number_of_players:
-        table.big_blind = 0
     table.small_blind += 1
-    if table.small_blind >= number_of_players:
+    table.big_blind += 1
+
+    # Moves on positions where there are empty seats
+    player_seats = []
+    for player in players:
+        player_seats.append(player.seat_num)
+
+    if table.dealer > sorted(player_seats)[-1]:
+        table.dealer = 0
+    while table.dealer not in player_seats:
+        table.dealer += 1
+
+    if table.small_blind > sorted(player_seats)[-1]:
         table.small_blind = 0
+    while table.small_blind not in player_seats:
+        table.small_blind += 1
+
+    if table.big_blind > sorted(player_seats)[-1]:
+        table.big_blind = 0
+    while table.big_blind not in player_seats:
+        table.big_blind += 1
+
     table.save()
+
+    hand.current_player = table.big_blind + 1
+    if hand.current_player > sorted(player_seats)[-1]:
+        hand.current_player = 0
+    while hand.current_player not in player_seats:
+        hand.current_player += 1
 
     # Adding big and small blinds to the pot
     for player in players:
@@ -281,7 +294,6 @@ def deal_cards(request, id):
             player.save()
 
     hand.current_bet = table.blinds
-    hand.current_player = table.big_blind + 1
 
     # Distributes two cards to every player
     for i in range(2):
@@ -310,7 +322,7 @@ def deal_cards(request, id):
     poker.burnOne()
     card5 = poker.getOne()
     hand.card_5 = card5[0]
-    
+
     # Ensures big blind has option to raise in pre-flop betting
     hand.check_no = 0
     hand.save()
@@ -357,17 +369,17 @@ def bet(request, table_id, hand_id, player_id):
         hand.check_no = 1
 
     if (hand.check_no >= len(players) and
-      hand.check_no < (len(players) * 2)):
+       hand.check_no < (len(players) * 2)):
 
         hand.check_no = len(players) + 1
 
     if (hand.check_no >= (len(players) * 2) and
-      hand.check_no < (len(players) * 3)):
+       hand.check_no < (len(players) * 3)):
 
         hand.check_no = (len(players) * 2) + 1
 
     if (hand.check_no >= (len(players) * 3) and
-      hand.check_no < (len(players) * 4)):
+       hand.check_no < (len(players) * 4)):
 
         hand.check_no = (len(players) * 3) + 1
 
@@ -412,17 +424,17 @@ def raise_bet(request, table_id, hand_id, player_id):
         hand.check_no = 1
 
     if (hand.check_no >= len(players) and
-      hand.check_no < (len(players) * 2)):
+       hand.check_no < (len(players) * 2)):
 
         hand.check_no = len(players) + 1
 
     if (hand.check_no >= (len(players) * 2) and
-      hand.check_no < (len(players) * 3)):
+       hand.check_no < (len(players) * 3)):
 
         hand.check_no = (len(players) * 2) + 1
 
     if (hand.check_no >= (len(players) * 3) and
-      hand.check_no < (len(players) * 4)):
+       hand.check_no < (len(players) * 4)):
 
         hand.check_no = (len(players) * 3) + 1
 
@@ -454,7 +466,7 @@ def call_bet(request, table_id, hand_id, player_id):
             hand.raise_amount = hand.current_bet - hand.raise_amount
         else:
             hand.raise_amount = 0
-    
+
         old_player_pot = player.player_pot
         hand.current_bet -= hand.raise_amount
         player.player_pot = hand.player_pot
@@ -464,9 +476,9 @@ def call_bet(request, table_id, hand_id, player_id):
 
     # If the player is the last player to bet then reset the betting
     if (hand.check_no == len(players) or
-      hand.check_no == len(players) * 2 or
-      hand.check_no == len(players) * 3 or
-      hand.check_no == len(players) * 4):
+       hand.check_no == len(players) * 2 or
+       hand.check_no == len(players) * 3 or
+       hand.check_no == len(players) * 4):
 
         hand.current_bet = 0
         hand.raise_amount = 0

@@ -7,7 +7,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 class Table(models.Model):
     
     name = models.CharField(max_length=50)
-    owner = models.OneToOneField(User, on_delete=models.PROTECT, default=0)
+    owner = models.ForeignKey(User, on_delete=models.PROTECT, default=0)
     no_of_players = models.IntegerField(default=2, validators=[MinValueValidator(2), MaxValueValidator(8)])
     blinds = models.IntegerField(default=10)
     is_active = models.BooleanField(default=False)

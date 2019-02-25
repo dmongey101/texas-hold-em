@@ -1,6 +1,6 @@
-var chips
-var deal
-var check
+var chips;
+var deal;
+var check;
 
 function playFx() {
     chips = new Audio();
