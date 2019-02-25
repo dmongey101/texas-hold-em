@@ -406,7 +406,7 @@ def raise_bet(request, table_id, hand_id, player_id):
     amount = request.POST.get('raise', 0)
 
     # When a player doesn't have enough chips
-    if int(amount) > player.chips:
+    if (int(amount) + hand.current_bet) > player.chips:
         return HttpResponse('Not enough chips')
 
     old_player_pot = player.player_pot

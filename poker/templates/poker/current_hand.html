@@ -45,7 +45,7 @@
             <div class="col-4">
                 <form class="margin-top" method="POST" action="{% url 'deal' table.id %}">
                     {% csrf_token %}
-                    <button type="submit" id="deal" class="btn btn-info">Deal</button>
+                    <button type="submit" class="btn btn-info">Deal</button>
                 </form>
             </div>
             {% endif %}
@@ -137,14 +137,14 @@
     {% if hand.current_bet == 0 or hand.check_no == big_blind_check %} 
             <form method="POST" action="{% url 'check' table.id hand.id player.id %}">
                 {% csrf_token %}
-                <button type="submit" id="check" class="btn btn-warning margin-top">Check</button>
+                <button type="submit" class="btn btn-warning margin-top">Check</button>
             </form>
         </div>
     </div>
     {% else %}
             <form method="POST" action="{% url 'call' table.id hand.id player.id %}">
                 {% csrf_token %}
-                <button type="submit" id="chips" class="btn btn-warning margin-top">Call</button>
+                <button type="submit" class="btn btn-warning margin-top">Call</button>
             </form>
         </div>
     </div>
@@ -155,7 +155,7 @@
     {% if hand.current_bet == 0 %}
             <form method="POST" action="{% url 'bet' table.id hand.id player.id %}">
                 {% csrf_token %}
-                <button type="submit" id="chips" class="btn btn-info">Bet</button>
+                <button type="submit" class="btn btn-info">Bet</button>
                 <input class="input" placeholder="Bet" type="number" step="5" name="bet" required/>
             </form>
         </div>
@@ -163,7 +163,7 @@
     {% else %}
             <form method="POST" action="{% url 'raise' table.id hand.id player.id %}">
                 {% csrf_token %}
-                <button type="submit" id="chips" class="btn btn-info">Raise</button>
+                <button type="submit" class="btn btn-info">Raise</button>
                 <input class="input" placeholder="Raise" type="number" step="5" name="raise" required/>
             </form>
        </div>
