@@ -83,10 +83,10 @@
 
     {% if player.seat_num == hand.current_player %}
     <div class="col-sm-6 col-md-4 col-lg-3 center active">
-        {{ player.player_pot }}
+       Current bet: {{ player.player_pot }}
     {% else %}
     <div class="col-sm-6 col-md-4 col-lg-3 center">
-        {{ player.player_pot }}
+       Current bet: {{ player.player_pot }}
     {% endif %}    
         <div class="row">
             <div class="col-12">
@@ -126,7 +126,6 @@
         {% endfor %}
 
     {% if hand != None and player.user == request.user and player.is_active and player.seat_num == hand.current_player and hand.check_no < no_of_river_players %}
-    {{ hand.current_player }}
     <div class="row">
         <div class="col-6 center">
             <form method="POST" action="{% url 'fold' hand.id player.id %}">

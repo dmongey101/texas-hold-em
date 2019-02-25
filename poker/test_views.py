@@ -71,6 +71,10 @@ class TestViews(TestCase):
 
 
     def test_get_current_hand_page(self):
+        User.objects.create_user(username='test', email='test@example.com', password='Madetotest')
+        self.client.login(username='test', password='Madetotest')
+        player = Player()
+        player.save()
         table = Table(name="Table 1")
         table.save()
         hand = Hand(table=table)
@@ -78,21 +82,6 @@ class TestViews(TestCase):
         page = self.client.get("/poker/table/current_hand/{0}".format(table.id))
         self.assertEqual(page.status_code, 200)
         self.assertTemplateUsed(page, "poker/current_hand.html")
-
-
-    def test_player_is_deleted_and_redirected_to_current_hand_when_no_chips(self):
-        User.objects.create_user(username='test', email='test@example.com', password='Madetotest')
-        self.client.login(username='test', password='Madetotest')
-        table = Table(name='Table 1')
-        table.save()
-        hand = Hand(table=table)
-        hand.save()
-        player = Player()
-        player.chips = 0
-        player.save()
-        response = self.client.get('/poker/table/current_hand/{0}'.format(table.id), follow=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertRedirects(response, '/poker/table/current_hand/{0}'.format(table.id))
 
 
     def test_delete_player_and_redirect_to_find_table_when_they_leave(self):
@@ -138,6 +127,8 @@ class TestViews(TestCase):
 
 
     def test_redirect_to_current_hand_after_betting(self):
+        User.objects.create_user(username='test', email='test@example.com', password='Madetotest')
+        self.client.login(username='test', password='Madetotest')
         table = Table(name='Table 1')
         table.save()
         hand = Hand(table=table)
@@ -150,6 +141,8 @@ class TestViews(TestCase):
 
 
     def test_redirect_to_current_hand_after_raising(self):
+        User.objects.create_user(username='test', email='test@example.com', password='Madetotest')
+        self.client.login(username='test', password='Madetotest')
         table = Table(name='Table 1')
         table.save()
         hand = Hand(table=table)
@@ -162,6 +155,8 @@ class TestViews(TestCase):
 
 
     def test_redirect_to_current_hand_after_calling(self):
+        User.objects.create_user(username='test', email='test@example.com', password='Madetotest')
+        self.client.login(username='test', password='Madetotest')
         table = Table(name='Table 1')
         table.save()
         hand = Hand(table=table)
@@ -174,6 +169,8 @@ class TestViews(TestCase):
 
 
     def test_redirect_to_current_hand_after_checking(self):
+        User.objects.create_user(username='test', email='test@example.com', password='Madetotest')
+        self.client.login(username='test', password='Madetotest')
         table = Table(name='Table 1')
         table.save()
         hand = Hand(table=table)
