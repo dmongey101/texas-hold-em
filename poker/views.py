@@ -60,7 +60,7 @@ def view_table(request, id):
     context = {"table": table, "players": players,
                "player_list": player_list}
 
-    return render(request, "poker/view_table.html", context)
+    return render(request, "poker/view_table.html", context) 
 
 
 # -------- Shows any particular live game --------
@@ -336,7 +336,6 @@ def deal_cards(request, id):
 
 # ------ Removes a player from a hand -------
 def fold_hand(request, hand_id, player_id):
-    players = Player.objects.filter(id=hand_id)
     p = Player.objects.get(id=player_id)
     p.is_active = False
     p.save()
